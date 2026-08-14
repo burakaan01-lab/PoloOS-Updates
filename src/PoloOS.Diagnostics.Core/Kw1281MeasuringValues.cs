@@ -1,0 +1,9 @@
+namespace PoloOS.Diagnostics.Core;
+public sealed record Kw1281SensorValue(byte SensorId,byte A,byte B)
+{
+    public double? NumericValue=>SensorId switch {1=>0.2*A*B,2=>A*0.002*B,3=>0.002*A*B,5=>A*(B-100)*0.1,6=>0.001*A*B,7=>0.01*A*B,8=>0.1*A*B,11=>0.0001*A*(B-128)+1,12=>0.001*A*B,14=>0.005*A*B,15=>0.01*A*B,18=>0.04*A*B,19=>A*B*0.01,20=>A*(B-128)/128.0,21=>0.001*A*B,22=>0.001*A*B,23=>B/256.0*A,24=>0.001*A*B,25=>B*1.421+A/182.0,26=>B-A,31=>B/2560.0*A,32=>B>128?B-256:B,33=>A==0?100.0*B:100.0*B/A,35=>0.01*A*B,39=>B/256.0*A,43=>B*0.1+25.5*A,45=>0.1*A*B/100.0,48=>B+A*255,49=>B/4.0*A*0.1,50=>A==0?(B-128)/0.01:(B-128)/(0.01*A),51=>((B-128)/255.0)*A,53=>(B-128)*1.4222+0.006*A,54=>A*256+B,59=>(A*256+B)/32768.0,60=>(A*256+B)*0.01,61=>A==0?B-128:(B-128)/(double)A,64=>A+B,66=>(A*B)/511.12,69=>(256*A+B)*0.3254,_=>null};
+    public string Unit=>SensorId switch {1=>"rpm",2 or 20 or 23 or 33=>"%",5 or 26=>"°C",6 or 21 or 43 or 66=>"V",7=>"km/h",14 or 69=>"bar",18 or 50=>"mbar",12 or 64=>"Ω",15 or 22=>"ms",24=>"A",25 or 53=>"g/s",35=>"l/h",_=>""};
+    public string Display=>NumericValue is double v?$"{v:0.###}{(string.IsNullOrEmpty(Unit)?"":" "+Unit)}":$"RAW({SensorId:X2} {A:X2} {B:X2})";
+}
+public sealed record Kw1281GroupSample(byte Group,IReadOnlyList<Kw1281SensorValue> Values,IReadOnlyList<byte> RawBody){public string RawHex=>string.Join(" ",RawBody.Select(x=>x.ToString("X2"))); public override string ToString()=>$"G{Group:D3} "+string.Join(" | ",Values.Select((v,i)=>$"{i+1}:{v.Display}"));}
+public sealed record EngineLiveFrame(DateTime Timestamp,double? Rpm,double? SpeedKmh,double? BoostGaugeBar,double? PedalPercent,double? CoolantC,double? Voltage,double? MafGps,double? FuelTempC,double? IntakeTempC,double? InjectionMgStroke,double? BoostAbsoluteMbar,double? AmbientMbar,bool? BrakePressed,bool? ClutchPressed,byte? PedalSwitchMask,IReadOnlyList<Kw1281GroupSample> Groups);

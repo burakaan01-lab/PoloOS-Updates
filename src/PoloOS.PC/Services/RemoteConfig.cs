@@ -1,0 +1,13 @@
+using System.Text.Json;
+namespace PoloOS.PC.Services;
+public sealed class RemoteConfig
+{
+    public string BaseUrl{get;set;}="https://poloos-remote.poloos-kagan.workers.dev/";public string Channel{get;set;}="stable";public string AuthToken{get;set;}="";public bool AutoCheckUpdates{get;set;}=true;public bool AutoUploadLogs{get;set;}=true;
+    public bool IsConfigured=>Uri.TryCreate(BaseUrl,UriKind.Absolute,out var uri)&&(uri.Scheme==Uri.UriSchemeHttp||uri.Scheme==Uri.UriSchemeHttps);
+    public static string ConfigDirectory=>Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"PoloOS"); public static string ConfigPath=>Path.Combine(ConfigDirectory,"poloos.remote.json"); private static string LegacyConfigPath=>Path.Combine(AppContext.BaseDirectory,"poloos.remote.json");
+    public static RemoteConfig LoadOrCreate(){var loaded=TryLoad(ConfigPath);if(loaded is not null){if(IsGitHubBootstrapUrl(loaded.BaseUrl)){loaded.BaseUrl="https://poloos-remote.poloos-kagan.workers.dev/";loaded.Save();}return loaded;}var legacy=TryLoad(LegacyConfigPath);if(legacy is not null&&legacy.IsConfigured){legacy.Save();return legacy;}var created=new RemoteConfig();created.Save();return created;}
+    public void Save(){Directory.CreateDirectory(ConfigDirectory);var normalized=new RemoteConfig{BaseUrl=(BaseUrl??"").Trim(),Channel=string.IsNullOrWhiteSpace(Channel)?"stable":Channel.Trim(),AuthToken=AuthToken??"",AutoCheckUpdates=AutoCheckUpdates,AutoUploadLogs=AutoUploadLogs};var json=JsonSerializer.Serialize(normalized,JsonOptions(true));var tempPath=ConfigPath+".tmp";File.WriteAllText(tempPath,json);File.Move(tempPath,ConfigPath,overwrite:true);}
+    public Uri BuildUri(string relative){if(!IsConfigured)throw new InvalidOperationException("REMOTE sunucu adresi ayarlı değil.");var root=new Uri(BaseUrl.TrimEnd('/')+"/",UriKind.Absolute);return new Uri(root,relative.TrimStart('/'));}
+    private static RemoteConfig? TryLoad(string path){try{if(!File.Exists(path))return null;var json=File.ReadAllText(path);return JsonSerializer.Deserialize<RemoteConfig>(json,JsonOptions());}catch{try{if(string.Equals(path,ConfigPath,StringComparison.OrdinalIgnoreCase)&&File.Exists(path)){var badPath=path+".bad_"+DateTime.Now.ToString("yyyyMMdd_HHmmss");File.Copy(path,badPath,overwrite:false);}}catch{}return null;}}
+    private static bool IsGitHubBootstrapUrl(string? value)=>!string.IsNullOrWhiteSpace(value)&&value.Contains("raw.githubusercontent.com/burakaan01-lab/PoloOS-Updates",StringComparison.OrdinalIgnoreCase); private static JsonSerializerOptions JsonOptions(bool writeIndented=false)=>new(){PropertyNameCaseInsensitive=true,PropertyNamingPolicy=JsonNamingPolicy.CamelCase,WriteIndented=writeIndented};
+}

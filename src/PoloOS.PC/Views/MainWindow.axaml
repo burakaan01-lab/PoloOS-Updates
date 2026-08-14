@@ -1,0 +1,119 @@
+<Window
+    x:Class="PoloOS.PC.Views.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="PoloOS Minimal Test Client"
+    Width="980"
+    Height="680"
+    MinWidth="760"
+    MinHeight="520"
+    WindowStartupLocation="CenterScreen"
+    Background="#111111"
+    FontFamily="Segoe UI">
+
+  <Window.Styles>
+    <Style Selector="Button">
+      <Setter Property="Background" Value="#222222"/>
+      <Setter Property="Foreground" Value="#F2F2F2"/>
+      <Setter Property="BorderBrush" Value="#3A3A3A"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="2"/>
+      <Setter Property="Padding" Value="10,6"/>
+      <Setter Property="MinHeight" Value="32"/>
+    </Style>
+    <Style Selector="Button:pointerover">
+      <Setter Property="Background" Value="#2B2B2B"/>
+    </Style>
+    <Style Selector="TextBlock.value">
+      <Setter Property="FontFamily" Value="Consolas"/>
+      <Setter Property="FontSize" Value="18"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+    </Style>
+    <Style Selector="TextBlock.label">
+      <Setter Property="Foreground" Value="#A8A8A8"/>
+      <Setter Property="FontSize" Value="12"/>
+    </Style>
+    <Style Selector="Border.panel">
+      <Setter Property="Background" Value="#181818"/>
+      <Setter Property="BorderBrush" Value="#303030"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="2"/>
+      <Setter Property="Padding" Value="10"/>
+    </Style>
+    <Style Selector="ListBox">
+      <Setter Property="Background" Value="#101010"/>
+      <Setter Property="BorderBrush" Value="#303030"/>
+      <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+  </Window.Styles>
+
+  <Grid RowDefinitions="44,*" Background="#111111">
+    <Border Background="#181818" BorderBrush="#303030" BorderThickness="0,0,0,1" Padding="12,0">
+      <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+        <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+          <TextBlock Text="PoloOS" FontWeight="Bold" FontSize="16" Foreground="#FFFFFF"/>
+          <TextBlock Text="MINIMAL TEST" FontSize="11" Foreground="#8F8F8F" VerticalAlignment="Center"/>
+        </StackPanel>
+        <TextBlock x:Name="GlobalStatusText" Grid.Column="1" Text="HAZIR" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#B8B8B8" FontSize="12"/>
+        <TextBlock x:Name="VersionText" Grid.Column="2" Text="v0.5.10.9.16 • READ ONLY • FTDI 0" VerticalAlignment="Center" Foreground="#7F7F7F" FontSize="11"/>
+      </Grid>
+    </Border>
+
+    <TabControl Grid.Row="1" Margin="8" x:Name="MainTabs">
+      <TabItem Header="LIVE DATA">
+        <Grid RowDefinitions="Auto,*" Margin="8">
+          <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
+            <Button x:Name="LiveToggleButton" Content="CANLI VERİYİ BAŞLAT"/>
+            <TextBlock x:Name="LiveStatusText" Text="DURDU" Foreground="#A8A8A8" VerticalAlignment="Center"/>
+          </StackPanel>
+          <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+              <Border Classes="panel"><Grid ColumnDefinitions="*,Auto"><TextBlock Classes="label" Text="RPM" VerticalAlignment="Center"/><TextBlock x:Name="RpmValue" Classes="value" Grid.Column="1" Text="—"/></Grid></Border>
+              <Border Classes="panel" Grid.Column="1"><Grid ColumnDefinitions="*,Auto"><TextBlock Classes="label" Text="HIZ" VerticalAlignment="Center"/><TextBlock x:Name="SpeedValue" Classes="value" Grid.Column="1" Text="—"/></Grid></Border>
+              <Border Classes="panel" Grid.Row="1"><Grid ColumnDefinitions="*,Auto"><TextBlock Classes="label" Text="BOOST" VerticalAlignment="Center"/><TextBlock x:Name="BoostValue" Classes="value" Grid.Column="1" Text="—"/></Grid></Border>
+              <Border Classes="panel" Grid.Row="1" Grid.Column="1"><Grid ColumnDefinitions="*,Auto"><TextBlock Classes="label" Text="GAZ PEDALI" VerticalAlignment="Center"/><TextBlock x:Name="PedalValue" Classes="value" Grid.Column="1" Text="—"/></Grid></Border>
+              <Border Classes="panel" Grid.Row="2"><Grid ColumnDefinitions="*,Auto"><TextBlock Classes="label" Text="SOĞUTMA SUYU" VerticalAlignment="Center"/><TextBlock x:Name="CoolantValue" Classes="value" Grid.Column="1" Text="—"/></Grid></Border>
+              <Border Classes="panel" Grid.Row="2" Grid.Column="1"><Grid ColumnDefinitions="*,Auto"><TextBlock Classes="label" Text="VOLTAJ" VerticalAlignment="Center"/><TextBlock x:Name="VoltageValue" Classes="value" Grid.Column="1" Text="—"/></Grid></Border>
+              <Border Classes="panel" Grid.Row="3"><Grid ColumnDefinitions="*,Auto"><TextBlock Classes="label" Text="YAKIT SICAKLIĞI" VerticalAlignment="Center"/><TextBlock x:Name="FuelTempValue" Classes="value" Grid.Column="1" Text="—"/></Grid></Border>
+              <Border Classes="panel" Grid.Row="3" Grid.Column="1"><Grid ColumnDefinitions="*,Auto"><TextBlock Classes="label" Text="EMME SICAKLIĞI" VerticalAlignment="Center"/><TextBlock x:Name="IntakeTempValue" Classes="value" Grid.Column="1" Text="—"/></Grid></Border>
+              <Border Classes="panel" Grid.Row="4"><Grid ColumnDefinitions="*,Auto"><TextBlock Classes="label" Text="FREN" VerticalAlignment="Center"/><TextBlock x:Name="BrakeValue" Classes="value" Grid.Column="1" Text="—"/></Grid></Border>
+              <Border Classes="panel" Grid.Row="4" Grid.Column="1"><Grid ColumnDefinitions="*,Auto"><TextBlock Classes="label" Text="DEBRİYAJ" VerticalAlignment="Center"/><TextBlock x:Name="ClutchValue" Classes="value" Grid.Column="1" Text="—"/></Grid></Border>
+              <Border Classes="panel" Grid.Row="5"><Grid ColumnDefinitions="*,Auto"><TextBlock Classes="label" Text="MAF" VerticalAlignment="Center"/><TextBlock x:Name="MafValue" Classes="value" Grid.Column="1" Text="—"/></Grid></Border>
+              <Border Classes="panel" Grid.Row="5" Grid.Column="1"><Grid ColumnDefinitions="*,Auto"><TextBlock Classes="label" Text="ENJEKSİYON" VerticalAlignment="Center"/><TextBlock x:Name="InjectionValue" Classes="value" Grid.Column="1" Text="—"/></Grid></Border>
+            </Grid>
+          </ScrollViewer>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="DTC">
+        <Grid RowDefinitions="Auto,Auto,*" Margin="8">
+          <StackPanel Orientation="Horizontal" Spacing="8"><Button x:Name="DtcScanButton" Content="8 MODÜLÜ TARA"/><TextBlock x:Name="DtcStatusText" Text="BEKLİYOR" Foreground="#A8A8A8" VerticalAlignment="Center"/></StackPanel>
+          <TextBlock Grid.Row="1" Text="01 Motor • 03 ABS • 08 Klima • 09 Merkezi Elektrik • 15 Airbag • 17 Gösterge • 25 İmmobilizer • 44 Direksiyon" Foreground="#777777" FontSize="11" Margin="0,8" TextWrapping="Wrap"/>
+          <ListBox Grid.Row="2" x:Name="DtcList" FontFamily="Consolas" FontSize="12"/>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="TEST LAB">
+        <Grid RowDefinitions="Auto,Auto,*" Margin="8">
+          <WrapPanel Orientation="Horizontal" Margin="0,0,0,8">
+            <Button x:Name="TestEngineButton" Content="01 MOTOR" Margin="0,0,6,6"/><Button x:Name="TestAbsButton" Content="03 ABS" Margin="0,0,6,6"/><Button x:Name="TestCentralButton" Content="09 MERKEZİ" Margin="0,0,6,6"/><Button x:Name="TestClusterButton" Content="17 GÖSTERGE" Margin="0,0,6,6"/><Button x:Name="TestSteeringButton" Content="44 DİREKSİYON" Margin="0,0,6,6"/><Button x:Name="TestAllButton" Content="TÜMÜ" Margin="0,0,6,6"/>
+          </WrapPanel>
+          <TextBlock Grid.Row="1" x:Name="TestStatusText" Text="Bir modül seç. Testler salt-okunur çalışır." Foreground="#A8A8A8" Margin="0,0,0,8"/>
+          <ListBox Grid.Row="2" x:Name="TestList" FontFamily="Consolas" FontSize="12"/>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="LOG">
+        <Grid RowDefinitions="Auto,Auto,Auto,*" Margin="8">
+          <WrapPanel Orientation="Horizontal" Margin="0,0,0,8">
+            <Button x:Name="OpenLogsButton" Content="LOG KLASÖRÜ" Margin="0,0,6,6"/><Button x:Name="CopyLogButton" Content="KOPYALA" Margin="0,0,6,6"/><Button x:Name="ClearLogButton" Content="EKRANI TEMİZLE" Margin="0,0,6,6"/><Button x:Name="UploadLatestLogButton" Content="SON LOGU YÜKLE" Margin="0,0,6,6"/><Button x:Name="UpdateButton" Content="GÜNCELLEME KONTROL" Margin="0,0,6,6"/>
+          </WrapPanel>
+          <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,8"><TextBlock Text="SUNUCU" Foreground="#A8A8A8" VerticalAlignment="Center" Margin="0,0,8,0"/><TextBox x:Name="RemoteBaseUrlBox" Grid.Column="1" Watermark="http://127.0.0.1:5088/" MinWidth="280"/><Button x:Name="SaveRemoteButton" Grid.Column="2" Content="KAYDET" Margin="8,0,0,0"/></Grid>
+          <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,8"><TextBlock x:Name="RemoteStatusText" Text="REMOTE: AYAR BEKLİYOR" Foreground="#A8A8A8" VerticalAlignment="Center"/><TextBlock x:Name="LastLogText" Grid.Column="1" Text="SON LOG: —" Foreground="#777777" VerticalAlignment="Center" Margin="14,0"/><TextBlock x:Name="LogCountText" Grid.Column="2" Text="0 satır" Foreground="#777777" VerticalAlignment="Center"/></Grid>
+          <ListBox Grid.Row="3" x:Name="LogList" FontFamily="Consolas" FontSize="11"/>
+        </Grid>
+      </TabItem>
+    </TabControl>
+  </Grid>
+</Window>
