@@ -26,6 +26,15 @@ jobs:
           "POLOOS_NOTES=$($req.notes)" | Out-File -FilePath $env:GITHUB_ENV -Append
           dotnet --version
 
+      - name: Stamp app version
+        shell: pwsh
+        run: |
+          $path = 'src/PoloOS.PC/Views/MainWindow.axaml.cs'
+          $text = Get-Content $path -Raw
+          $replacement = 'private const string AppVersion = "' + $env:POLOOS_VERSION + '";'
+          $text = [regex]::Replace($text, 'private const string AppVersion = "[^"]+";', $replacement)
+          [System.IO.File]::WriteAllText((Join-Path $env:GITHUB_WORKSPACE $path), $text, (New-Object System.Text.UTF8Encoding($false)))
+
       - name: Publish win-x64 self-contained
         shell: pwsh
         run: |
