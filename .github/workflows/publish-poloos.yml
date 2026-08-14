@@ -32,7 +32,8 @@ jobs:
         run: |
           if (-not (Test-Path $env:POLOOS_SOURCE)) { throw "Source ZIP not found: $env:POLOOS_SOURCE" }
           New-Item -ItemType Directory -Force -Path work | Out-Null
-          Expand-Archive -Path $env:POLOOS_SOURCE -DestinationPath work -Force
+          tar -xf $env:POLOOS_SOURCE -C work
+          if ($LASTEXITCODE -ne 0) { throw "tar extraction failed with code $LASTEXITCODE" }
           $sln = Get-ChildItem work -Recurse -Filter PoloOS.PC.sln | Select-Object -First 1
           if (-not $sln) { throw 'PoloOS.PC.sln not found in source archive' }
           "POLOOS_ROOT=$($sln.Directory.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
