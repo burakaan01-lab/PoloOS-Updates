@@ -15,7 +15,7 @@ public sealed class LogUploadResult
 
 public sealed class LogUploadService : IDisposable
 {
-    // Only the latest SESSION pointer is mirrored here. Diagnostic/log content stays on PoloOS Cloudflare.
+    // Only the latest random SESSION id is mirrored here. Diagnostic/log content stays on PoloOS Cloudflare.
     private const string LatestSessionBeaconUrl = "https://ntfy.sh/poloos-last-fc150cc0f433c4c9b835edf3499c2b67";
 
     private readonly RemoteConfig _config;
@@ -31,8 +31,7 @@ public sealed class LogUploadService : IDisposable
         _http.DefaultRequestHeaders.UserAgent.Add(
             new ProductInfoHeaderValue("PoloOS-PC", "1.0"));
 
-        // Refresh the pointer whenever PoloOS starts, so "son loga bak" works even
-        // when the last diagnostic upload happened in an earlier app session.
+        // Refresh the session-id pointer whenever PoloOS starts.
         _ = RepublishSavedSessionBeaconAsync();
     }
 
@@ -118,9 +117,7 @@ public sealed class LogUploadService : IDisposable
             if (!string.IsNullOrWhiteSpace(sessionId))
             {
                 SaveLastSession(sessionId, textUrl, kind, appVersion);
-                await TryPublishSessionBeaconAsync(
-                    BuildBeaconText(sessionId, textUrl, kind, appVersion, "upload"),
-                    cancellationToken);
+                await TryPublishSessionBeaconAsync(sessionId, cancellationToken);
             }
 
             TryDelete(package);
@@ -211,28 +208,15 @@ public sealed class LogUploadService : IDisposable
                ui;
     }
 
-    private static string BuildBeaconText(
-        string sessionId,
-        string textUrl,
-        string kind,
-        string appVersion,
-        string source) =>
-        $"SESSION={sessionId}\n" +
-        $"TEXT_URL={textUrl}\n" +
-        $"KIND={kind}\n" +
-        $"APP_VERSION={appVersion}\n" +
-        $"SOURCE={source}\n" +
-        $"UTC={DateTimeOffset.UtcNow:O}";
-
     private async Task TryPublishSessionBeaconAsync(
-        string text,
+        string sessionId,
         CancellationToken cancellationToken = default)
     {
         try
         {
             using var request = new HttpRequestMessage(HttpMethod.Post, LatestSessionBeaconUrl)
             {
-                Content = new StringContent(text, new UTF8Encoding(false), "text/plain")
+                Content = new StringContent("SESSION=" + sessionId, new UTF8Encoding(false), "text/plain")
             };
             request.Headers.TryAddWithoutValidation("Title", "PoloOS latest session");
             using var response = await _http.SendAsync(request, cancellationToken);
@@ -251,15 +235,15 @@ public sealed class LogUploadService : IDisposable
             if (!File.Exists(path))
                 return;
 
-            var saved = await File.ReadAllTextAsync(path);
-            if (string.IsNullOrWhiteSpace(saved) ||
-                !saved.Contains("SESSION=", StringComparison.OrdinalIgnoreCase))
+            var lines = await File.ReadAllLinesAsync(path);
+            var sessionLine = lines.FirstOrDefault(x =>
+                x.StartsWith("SESSION=", StringComparison.OrdinalIgnoreCase));
+            if (string.IsNullOrWhiteSpace(sessionLine))
                 return;
 
-            var text = saved.TrimEnd() + Environment.NewLine +
-                       "SOURCE=startup-republish" + Environment.NewLine +
-                       $"REPUBLISHED_UTC={DateTimeOffset.UtcNow:O}";
-            await TryPublishSessionBeaconAsync(text);
+            var sessionId = sessionLine["SESSION=".Length..].Trim();
+            if (!string.IsNullOrWhiteSpace(sessionId))
+                await TryPublishSessionBeaconAsync(sessionId);
         }
         catch
         {
