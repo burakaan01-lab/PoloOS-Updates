@@ -1,0 +1,7 @@
+{
+  "version": "0.5.10.9.16",
+  "packageUrl": "https://github.com/burakaan01-lab/PoloOS-Updates/releases/download/v0.5.10.9.16/PoloOS_0.5.10.9.16_win-x64.zip",
+  "sha256": "4A1A3B6A106364A1F6704E0CDC7FF8656D6502D29B19E3CC38BA60642E3BEB01",
+  "notes": "Cloud log text upload + GitHub OTA update channel",
+  "mandatory": false
+}
