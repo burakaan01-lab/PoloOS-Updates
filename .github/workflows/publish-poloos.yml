@@ -1,0 +1,91 @@
+name: Publish PoloOS OTA
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'build/release_request.json'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-publish:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Read release request
+        shell: pwsh
+        run: |
+          $req = Get-Content build/release_request.json -Raw | ConvertFrom-Json
+          "POLOOS_VERSION=$($req.version)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "POLOOS_SOURCE=$($req.source)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "POLOOS_NOTES=$($req.notes)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Extract source
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path work | Out-Null
+          Expand-Archive -Path $env:POLOOS_SOURCE -DestinationPath work -Force
+          $sln = Get-ChildItem work -Recurse -Filter PoloOS.PC.sln | Select-Object -First 1
+          if (-not $sln) { throw 'PoloOS.PC.sln not found in source archive' }
+          "POLOOS_ROOT=$($sln.Directory.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Publish win-x64 self-contained
+        shell: pwsh
+        run: |
+          $out = Join-Path $env:GITHUB_WORKSPACE 'publish/PoloOS_win-x64'
+          New-Item -ItemType Directory -Force -Path $out | Out-Null
+          dotnet publish "$env:POLOOS_ROOT/PoloOS.PC/PoloOS.PC.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o $out
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $updaterOut = Join-Path $out 'updater'
+          dotnet publish "$env:POLOOS_ROOT/PoloOS.Updater/PoloOS.Updater.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o $updaterOut
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Package and hash
+        shell: pwsh
+        run: |
+          $zipName = "PoloOS_$env:POLOOS_VERSION`_win-x64.zip"
+          $zipPath = Join-Path $env:GITHUB_WORKSPACE $zipName
+          Compress-Archive -Path "$env:GITHUB_WORKSPACE/publish/PoloOS_win-x64/*" -DestinationPath $zipPath -CompressionLevel Optimal -Force
+          $hash = (Get-FileHash -Algorithm SHA256 $zipPath).Hash
+          "POLOOS_ZIP=$zipPath" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "POLOOS_ZIP_NAME=$zipName" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "POLOOS_SHA256=$hash" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "v$env:POLOOS_VERSION"
+          gh release create $tag $env:POLOOS_ZIP --title "PoloOS $tag" --notes "$env:POLOOS_NOTES"
+
+      - name: Publish OTA manifest
+        shell: pwsh
+        run: |
+          $assetUrl = "https://github.com/${{ github.repository }}/releases/download/v$env:POLOOS_VERSION/$env:POLOOS_ZIP_NAME"
+          $manifest = [ordered]@{
+            version = $env:POLOOS_VERSION
+            packageUrl = $assetUrl
+            sha256 = $env:POLOOS_SHA256
+            notes = $env:POLOOS_NOTES
+            mandatory = $false
+          } | ConvertTo-Json
+          New-Item -ItemType Directory -Force -Path api | Out-Null
+          [System.IO.File]::WriteAllText((Join-Path $env:GITHUB_WORKSPACE 'api/version'), $manifest, (New-Object System.Text.UTF8Encoding($false)))
+          [System.IO.File]::WriteAllText((Join-Path $env:GITHUB_WORKSPACE 'version.json'), $manifest, (New-Object System.Text.UTF8Encoding($false)))
+          git config user.name 'PoloOS OTA Bot'
+          git config user.email 'poloos-ota@users.noreply.github.com'
+          git add api/version version.json
+          git commit -m "Publish PoloOS v$env:POLOOS_VERSION OTA manifest"
+          git push
