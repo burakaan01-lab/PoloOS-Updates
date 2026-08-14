@@ -1,5 +1,6 @@
 {
   "version": "0.5.10.9.16",
   "source": "source/PoloOS_PC_NATIVE_v0.5.10.9.16_GITHUB_OTA_TEXTLOG_SOURCE.zip",
-  "notes": "Cloud log text upload + GitHub OTA update channel"
+  "notes": "Cloud log text upload + GitHub OTA update channel",
+  "attempt": 2
 }
