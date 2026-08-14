@@ -23,16 +23,16 @@ jobs:
         run: |
           $req = Get-Content build/release_request.json -Raw | ConvertFrom-Json
           "POLOOS_VERSION=$($req.version)" | Out-File -FilePath $env:GITHUB_ENV -Append
-          "POLOOS_SOURCE=$($req.source)" | Out-File -FilePath $env:GITHUB_ENV -Append
           "POLOOS_NOTES=$($req.notes)" | Out-File -FilePath $env:GITHUB_ENV -Append
           dotnet --version
 
-      - name: Extract source
+      - name: Rebuild source ZIP
         shell: pwsh
         run: |
-          if (-not (Test-Path $env:POLOOS_SOURCE)) { throw "Source ZIP not found: $env:POLOOS_SOURCE" }
+          $b64 = Get-Content build/source.b64 -Raw
+          [IO.File]::WriteAllBytes('PoloOS_source.zip', [Convert]::FromBase64String($b64))
           New-Item -ItemType Directory -Force -Path work | Out-Null
-          tar -xf $env:POLOOS_SOURCE -C work
+          tar -xf PoloOS_source.zip -C work
           if ($LASTEXITCODE -ne 0) { throw "tar extraction failed with code $LASTEXITCODE" }
           $sln = Get-ChildItem work -Recurse -Filter PoloOS.PC.sln | Select-Object -First 1
           if (-not $sln) { throw 'PoloOS.PC.sln not found in source archive' }
