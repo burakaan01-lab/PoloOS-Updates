@@ -1,5 +1,5 @@
 {
-  "version": "0.5.10.9.17",
-  "notes": "Session text URL + last-session persistence + OTA version stamping",
+  "version": "0.5.10.9.18",
+  "notes": "Automatic latest-session beacon: say 'son loga bak' without sending a session ID",
   "attempt": 1
 }
