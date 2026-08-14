@@ -1,7 +1,7 @@
 {
   "version": "0.5.10.9.18",
   "packageUrl": "https://github.com/burakaan01-lab/PoloOS-Updates/releases/download/v0.5.10.9.18/PoloOS_0.5.10.9.18_win-x64.zip",
-  "sha256": "EA00A16F8A1FE1CB3B1F621521F3EB72646ED063AF77B878DD2F227DC3CDD15C",
+  "sha256": "1BFCB16B317EECD06C3E7F7C513BC4CF87FFE4BCD0DB82EF4BDD5409CC8C290B",
   "notes": "Automatic latest-session beacon: say 'son loga bak' without sending a session ID",
   "mandatory": false
 }
