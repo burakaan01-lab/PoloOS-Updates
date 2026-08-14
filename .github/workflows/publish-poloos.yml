@@ -26,27 +26,15 @@ jobs:
           "POLOOS_NOTES=$($req.notes)" | Out-File -FilePath $env:GITHUB_ENV -Append
           dotnet --version
 
-      - name: Rebuild source ZIP
-        shell: pwsh
-        run: |
-          $b64 = Get-Content build/source.b64 -Raw
-          [IO.File]::WriteAllBytes('PoloOS_source.zip', [Convert]::FromBase64String($b64))
-          New-Item -ItemType Directory -Force -Path work | Out-Null
-          tar -xf PoloOS_source.zip -C work
-          if ($LASTEXITCODE -ne 0) { throw "tar extraction failed with code $LASTEXITCODE" }
-          $sln = Get-ChildItem work -Recurse -Filter PoloOS.PC.sln | Select-Object -First 1
-          if (-not $sln) { throw 'PoloOS.PC.sln not found in source archive' }
-          "POLOOS_ROOT=$($sln.Directory.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
-
       - name: Publish win-x64 self-contained
         shell: pwsh
         run: |
           $out = Join-Path $env:GITHUB_WORKSPACE 'publish/PoloOS_win-x64'
           New-Item -ItemType Directory -Force -Path $out | Out-Null
-          dotnet publish "$env:POLOOS_ROOT/PoloOS.PC/PoloOS.PC.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o $out
+          dotnet publish 'src/PoloOS.PC/PoloOS.PC.csproj' -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o $out
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $updaterOut = Join-Path $out 'updater'
-          dotnet publish "$env:POLOOS_ROOT/PoloOS.Updater/PoloOS.Updater.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o $updaterOut
+          dotnet publish 'src/PoloOS.Updater/PoloOS.Updater.csproj' -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o $updaterOut
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Package and hash
@@ -66,6 +54,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = "v$env:POLOOS_VERSION"
+          if (gh release view $tag 2>$null) {
+            gh release delete $tag --yes --cleanup-tag
+          }
           gh release create $tag $env:POLOOS_ZIP --title "PoloOS $tag" --notes "$env:POLOOS_NOTES"
 
       - name: Publish OTA manifest
@@ -85,5 +76,7 @@ jobs:
           git config user.name 'PoloOS OTA Bot'
           git config user.email 'poloos-ota@users.noreply.github.com'
           git add api/version version.json
-          git commit -m "Publish PoloOS v$env:POLOOS_VERSION OTA manifest"
-          git push
+          if (-not (git diff --cached --quiet)) {
+            git commit -m "Publish PoloOS v$env:POLOOS_VERSION OTA manifest"
+            git push
+          }
