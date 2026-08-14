@@ -9,6 +9,7 @@ public sealed class LogUploadResult
 {
     public bool Success { get; init; }
     public string SessionId { get; init; } = "";
+    public string TextUrl { get; init; } = "";
     public string Message { get; init; } = "";
 }
 
@@ -103,14 +104,24 @@ public sealed class LogUploadService : IDisposable
             {
             }
 
+            var textUrl = string.IsNullOrWhiteSpace(sessionId)
+                ? ""
+                : _config.BuildUri($"api/logs/{Uri.EscapeDataString(sessionId)}/text").ToString();
+
+            if (!string.IsNullOrWhiteSpace(sessionId))
+                SaveLastSession(sessionId, textUrl, kind, appVersion);
+
             TryDelete(package);
             return new LogUploadResult
             {
                 Success = true,
                 SessionId = sessionId,
+                TextUrl = textUrl,
                 Message = string.IsNullOrWhiteSpace(sessionId)
                     ? "Log yüklendi."
-                    : $"Log yüklendi • Session {sessionId}"
+                    : string.IsNullOrWhiteSpace(textUrl)
+                        ? $"Log yüklendi • Session {sessionId}"
+                        : $"Log yüklendi • Session {sessionId} • TEXT {textUrl}"
             };
         }
         catch (Exception ex)
@@ -186,6 +197,28 @@ public sealed class LogUploadService : IDisposable
                source +
                $"{Environment.NewLine}{Environment.NewLine}=== UI LOG ==={Environment.NewLine}" +
                ui;
+    }
+
+    private static void SaveLastSession(
+        string sessionId,
+        string textUrl,
+        string kind,
+        string appVersion)
+    {
+        try
+        {
+            Directory.CreateDirectory(RemoteConfig.ConfigDirectory);
+            var path = Path.Combine(RemoteConfig.ConfigDirectory, "last-session.txt");
+            var text = $"SESSION={sessionId}{Environment.NewLine}" +
+                       $"TEXT_URL={textUrl}{Environment.NewLine}" +
+                       $"KIND={kind}{Environment.NewLine}" +
+                       $"APP_VERSION={appVersion}{Environment.NewLine}" +
+                       $"SAVED_UTC={DateTimeOffset.UtcNow:O}{Environment.NewLine}";
+            File.WriteAllText(path, text, new UTF8Encoding(false));
+        }
+        catch
+        {
+        }
     }
 
     private static string Trim(string text, int length) =>
