@@ -1,0 +1,75 @@
+name: Fetch latest PoloOS log
+
+on:
+  issues:
+    types: [edited]
+
+permissions:
+  contents: read
+  issues: read
+
+jobs:
+  fetch-latest-log:
+    if: github.event.issue.number == 1 && github.event.issue.title == 'PoloOS Remote Log Bridge'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch latest session and diagnostic excerpt
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          TOPIC_URL='https://ntfy.sh/poloos-last-fc150cc0f433c4c9b835edf3499c2b67/json?poll=1&since=latest'
+          CF_BASE='https://poloos-remote.poloos-kagan.workers.dev'
+
+          curl -fsSL --retry 3 --retry-delay 1 "$TOPIC_URL" -o /tmp/ntfy.jsonl
+
+          SESSION=$(python3 - <<'PY'
+          import json,re
+          p='/tmp/ntfy.jsonl'
+          latest=None
+          with open(p,'r',encoding='utf-8') as f:
+              for line in f:
+                  line=line.strip()
+                  if not line: continue
+                  try: obj=json.loads(line)
+                  except Exception: continue
+                  if obj.get('event')=='message': latest=obj
+          if not latest:
+              raise SystemExit('No latest ntfy message found')
+          msg=latest.get('message','')
+          m=re.search(r'(?m)^SESSION=([^\s]+)',msg)
+          if not m:
+              raise SystemExit('SESSION not found in latest ntfy message')
+          print(m.group(1))
+          PY
+          )
+
+          echo "POLOOS_SESSION=$SESSION"
+          TEXT_URL="$CF_BASE/api/logs/$SESSION/text"
+          curl -fsSL --retry 3 --retry-delay 1 "$TEXT_URL" -o /tmp/poloos.log
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('/tmp/poloos.log')
+          text=p.read_text(encoding='utf-8', errors='replace')
+          lines=text.splitlines()
+          pat=re.compile(r'(DTC|ERR|ERROR|FAIL|TIMEOUT|HANDSHAKE|KWP|KW1281|VAG_|FTDI|SLOW_INIT|ACK|IDENT|MODULE|CONNECTED|CEVAP|MOTOR|ABS|STEERING|DIREKSIYON|DIREKSİYON|CLUSTER|GOSTERGE|GÖSTERGE|CENTRAL|01 |03 |09 |17 |44 )',re.I)
+          picked=[]
+          for i,line in enumerate(lines):
+              if pat.search(line):
+                  picked.append(f'{i+1:05d}: {line}')
+          # Keep the bridge useful without dumping the entire diagnostic file into a public Actions log.
+          head=[f'{i+1:05d}: {line}' for i,line in enumerate(lines[:40])]
+          tail_start=max(0,len(lines)-120)
+          tail=[f'{i+1:05d}: {lines[i]}' for i in range(tail_start,len(lines))]
+          merged=[]; seen=set()
+          for row in head+picked+tail:
+              if row not in seen:
+                  seen.add(row); merged.append(row)
+          if len(merged)>420:
+              merged=merged[:300]+['... [EXCERPT TRUNCATED] ...']+merged[-120:]
+          print('=== POLOOS_DIAGNOSTIC_EXCERPT_BEGIN ===')
+          print('\n'.join(merged))
+          print('=== POLOOS_DIAGNOSTIC_EXCERPT_END ===')
+          PY
