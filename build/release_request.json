@@ -1,5 +1,5 @@
 {
-  "version": "0.5.10.9.16",
-  "notes": "Cloud log text upload + GitHub OTA update channel",
-  "attempt": 6
+  "version": "0.5.10.9.17",
+  "notes": "Session text URL + last-session persistence + OTA version stamping",
+  "attempt": 1
 }
