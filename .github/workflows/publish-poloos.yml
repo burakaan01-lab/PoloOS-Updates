@@ -18,27 +18,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup .NET 10
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-
       - name: Read release request
         shell: pwsh
         run: |
           $req = Get-Content build/release_request.json -Raw | ConvertFrom-Json
           "POLOOS_VERSION=$($req.version)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "POLOOS_SOURCE=$($req.source)" | Out-File -FilePath $env:GITHUB_ENV -Append
           "POLOOS_NOTES=$($req.notes)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          dotnet --version
 
-      - name: Reconstruct and extract source
+      - name: Extract source
         shell: pwsh
         run: |
-          $parts = Get-ChildItem build/source_chunks -Filter '*.b64' | Sort-Object Name
-          if (-not $parts) { throw 'No source chunks found' }
-          $b64 = ($parts | ForEach-Object { Get-Content $_.FullName -Raw }) -join ''
-          [IO.File]::WriteAllBytes('PoloOS_source.zip', [Convert]::FromBase64String($b64))
+          if (-not (Test-Path $env:POLOOS_SOURCE)) { throw "Source ZIP not found: $env:POLOOS_SOURCE" }
           New-Item -ItemType Directory -Force -Path work | Out-Null
-          Expand-Archive -Path PoloOS_source.zip -DestinationPath work -Force
+          Expand-Archive -Path $env:POLOOS_SOURCE -DestinationPath work -Force
           $sln = Get-ChildItem work -Recurse -Filter PoloOS.PC.sln | Select-Object -First 1
           if (-not $sln) { throw 'PoloOS.PC.sln not found in source archive' }
           "POLOOS_ROOT=$($sln.Directory.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
