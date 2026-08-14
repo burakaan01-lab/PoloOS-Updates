@@ -1,6 +1,5 @@
 {
   "version": "0.5.10.9.16",
-  "source": "build/source.b64",
   "notes": "Cloud log text upload + GitHub OTA update channel",
-  "attempt": 4
+  "attempt": 5
 }
