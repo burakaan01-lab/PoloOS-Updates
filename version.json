@@ -1,7 +1,7 @@
 {
-  "version": "0.5.10.9.19",
-  "packageUrl": "https://github.com/burakaan01-lab/PoloOS-Updates/releases/download/v0.5.10.9.19/PoloOS_0.5.10.9.19_win-x64.zip",
-  "sha256": "163F005690938C33B7058A8E31AE713BDB5FE1AE63FF0513DF66AB153AFA6D2F",
-  "notes": "Add safe adapter disconnect button for releasing the FTDI/K-Line session",
+  "version": "0.5.10.9.20",
+  "packageUrl": "https://github.com/burakaan01-lab/PoloOS-Updates/releases/download/v0.5.10.9.20/PoloOS_0.5.10.9.20_win-x64.zip",
+  "sha256": "3AE276E236618254AC0316352C869D90F5DC986A8E414A6787E2497C1CEF0E58",
+  "notes": "Add low-resource PoloOS CarPC navigation shell foundation",
   "mandatory": false
 }
