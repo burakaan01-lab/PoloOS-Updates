@@ -1,7 +1,7 @@
 {
-  "version": "0.5.10.9.21",
-  "packageUrl": "https://github.com/burakaan01-lab/PoloOS-Updates/releases/download/v0.5.10.9.21/PoloOS_0.5.10.9.21_win-x64.zip",
-  "sha256": "FAE21EDAA20065C18B60562386CAAA97B3E5ABE6453FFEFB96BB4B0B8E6FF293",
-  "notes": "Add clock and date to the low-resource PoloOS CarPC shell",
+  "version": "0.5.10.9.22",
+  "packageUrl": "https://github.com/burakaan01-lab/PoloOS-Updates/releases/download/v0.5.10.9.22/PoloOS_0.5.10.9.22_win-x64.zip",
+  "sha256": "941473515FF299754B5FA0224FB33CCE34ADCD87A6713091AC475172C7253DA5",
+  "notes": "Add lightweight external media folder launcher",
   "mandatory": false
 }
