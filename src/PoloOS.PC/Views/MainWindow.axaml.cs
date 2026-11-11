@@ -14,12 +14,14 @@ namespace PoloOS.PC.Views;
 
 public partial class MainWindow : Window
 {
-    private const string AppVersion = "0.5.10.9.23";
+    private const string AppVersion = "0.5.10.9.24";
     private const int MaxUiLogLines = 400;
     private readonly RealLiveDataService _live = new();
     private readonly RemoteConfig _remote;
     private readonly UpdateService _updates;
     private readonly LogUploadService _uploads;
+    private readonly CarPlayHostService _carPlayHost = new();
+    private readonly YouTubeHostService _youtubeHost = new();
     private readonly ObservableCollection<string> _dtc = new();
     private readonly ObservableCollection<string> _tests = new();
     private readonly ObservableCollection<string> _logs = new();
@@ -38,7 +40,7 @@ public partial class MainWindow : Window
         FindControl<ListBox>("TestList")!.ItemsSource = _tests;
         FindControl<ListBox>("LogList")!.ItemsSource = _logs;
         FindControl<TextBox>("RemoteBaseUrlBox")!.Text = _remote.BaseUrl;
-        WireLive(); WireDiagnostics(); WireLog(); WireMedia(); WireRemote();
+        WireLive(); WireDiagnostics(); WireLog(); WireMedia(); WireCarPlay(); WireYouTube(); WireRemote();
         SetText("VersionText", $"v{AppVersion} • READ ONLY • FTDI 0");
         UpdateClock();
         _clockTimer.Tick += (_, _) => UpdateClock();
@@ -48,7 +50,7 @@ public partial class MainWindow : Window
         AddLog("[SYSTEM] PoloOS Minimal Test Client hazır.");
         AddLog("[SAFE] Diagnostik işlemler READ ONLY.");
         Opened += async (_, _) => { if (_remote.AutoCheckUpdates) await CheckForUpdatesAsync(true); };
-        Closing += async (_, _) => { _clockTimer.Stop(); await _live.DisposeAsync(); _updates.Dispose(); _uploads.Dispose(); };
+        Closing += async (_, _) => { _clockTimer.Stop(); await _youtubeHost.DisposeAsync(); await _carPlayHost.DisposeAsync(); await _live.DisposeAsync(); _updates.Dispose(); _uploads.Dispose(); };
     }
 
     private void NavButton_Click(object? sender, RoutedEventArgs e)
@@ -70,12 +72,15 @@ public partial class MainWindow : Window
         {
             ["home"] = ("HomePage", "HOME", "Polo 9N3 Multimedia Center"),
             ["music"] = ("MusicPage", "MEDIA", "Yerel müzik ve video"),
+            ["youtube"] = ("YouTubePage", "YOUTUBE LITE", "Hafif dokunmatik YouTube oynatıcı"),
+            ["carplay"] = ("CarPlayPage", "CARPLAY", "iPhone bağlantısı ve araç ekranı"),
             ["navigation"] = ("NavigationPage", "NAVIGATION", "Hafif navigasyon altyapısı"),
             ["vehicle"] = ("VehiclePage", "VEHICLE", "Canlı araç verileri"),
             ["diag"] = ("DiagPage", "VAG DIAG", "Salt-okunur tanılama"),
             ["logs"] = ("LogsPage", "LOGS", "Yerel ve remote kayıtlar"),
             ["bluetooth"] = ("BluetoothPage", "BLUETOOTH", "Telefon bağlantısı"),
-            ["settings"] = ("SettingsPage", "SETTINGS", "PoloOS ayarları")
+            ["settings"] = ("SettingsPage", "SETTINGS", "PoloOS ayarları"),
+            ["about"] = ("AboutPage", "ABOUT POLOOS", "Polo 9N3 multimedia platform")
         };
         if (!pages.TryGetValue(page, out var selected))
             return;
@@ -87,7 +92,7 @@ public partial class MainWindow : Window
                 control.IsVisible = item.Control == selected.Control;
         }
 
-        var navButtons = new[] { "HomeButton", "MusicButton", "NavigationButton", "VehicleButton", "DiagButton", "LogsButton", "BluetoothButton", "SettingsButton" };
+        var navButtons = new[] { "HomeButton", "MusicButton", "CarPlayButton", "NavigationButton", "VehicleButton", "DiagButton", "LogsButton", "BluetoothButton", "SettingsButton" };
         foreach (var name in navButtons)
         {
             var button = FindControl<Button>(name);
@@ -116,6 +121,71 @@ public partial class MainWindow : Window
         _live.StateReceived += s => Dispatcher.UIThread.Post(() => ApplyState(s));
         _live.Trace += s => Dispatcher.UIThread.Post(() => { AddLog(s); if (s.Contains("BAĞLANDI", StringComparison.OrdinalIgnoreCase)) { SetText("LiveStatusText", "OKUNUYOR"); SetGlobal("LIVE OKUNUYOR"); } else if (s.Contains("RECONNECT", StringComparison.OrdinalIgnoreCase)) SetText("LiveStatusText", "YENİDEN BAĞLANIYOR"); });
         _live.RunningChanged += running => Dispatcher.UIThread.Post(() => { SetButton("LiveToggleButton", running ? "CANLI VERİYİ DURDUR" : "CANLI VERİYİ BAŞLAT"); if (!running) { SetText("LiveStatusText", "DURDU"); if (!_diagBusy) SetGlobal("HAZIR"); } });
+    }
+
+    private void WireCarPlay()
+    {
+        _carPlayHost.Trace += message => Dispatcher.UIThread.Post(() => AddLog(message));
+        _carPlayHost.RunningChanged += running => Dispatcher.UIThread.Post(() =>
+        {
+            SetText("CarPlayStatusText", running ? "MOTOR AÇIK" : "BAĞLI DEĞİL");
+            SetText("CarPlayProjectionText", running ? "ChairPlay açık; iPhone bağlantısı bekleniyor" : "iPhone bağlantısı bekleniyor");
+            SetEnabled("CarPlayConnectButton", !running);
+            SetEnabled("CarPlayDisconnectButton", running);
+            SetEnabled("CarPlayAdapterButton", running);
+        });
+
+        FindControl<Button>("CarPlayConnectButton")!.Click += async (_, _) =>
+        {
+            SetText("CarPlayStatusText", "BAŞLATILIYOR");
+            SetText("CarPlayProjectionText", "ChairPlay motoru başlatılıyor...");
+            SetEnabled("CarPlayConnectButton", false);
+            await _carPlayHost.StartAsync();
+            if (!_carPlayHost.IsRunning)
+            {
+                SetText("CarPlayStatusText", "MOTOR YOK");
+                SetText("CarPlayProjectionText", "CarPlay\\ChairPlay.exe bulunamadı");
+                SetEnabled("CarPlayConnectButton", true);
+            }
+        };
+
+        FindControl<Button>("CarPlayDisconnectButton")!.Click += async (_, _) => await DisconnectCarPlayAsync("Kullanıcı bağlantıyı kesti");
+        FindControl<Button>("CarPlayAdapterButton")!.Click += async (_, _) => await DisconnectCarPlayAsync("CarPlay/OBD paneli serbest bırakıldı");
+    }
+
+    private async Task DisconnectCarPlayAsync(string reason)
+    {
+        await _carPlayHost.StopAsync();
+        SetText("CarPlayStatusText", "BAĞLI DEĞİL");
+        SetText("CarPlayProjectionText", "iPhone bağlantısı bekleniyor");
+        AddLog("[CARPLAY] " + reason);
+    }
+
+    private void WireYouTube()
+    {
+        _youtubeHost.Trace += message => Dispatcher.UIThread.Post(() => AddLog(message));
+        _youtubeHost.RunningChanged += running => Dispatcher.UIThread.Post(() =>
+        {
+            SetText("YouTubeStatusText", running ? "AÇIK" : "HAZIR");
+            SetText("YouTubePathText", running ? "YouTFast çalışıyor" : "YouTube motoru bekliyor");
+            SetEnabled("YouTubeOpenButton", !running);
+            SetEnabled("YouTubeCloseButton", running);
+        });
+
+        FindControl<Button>("YouTubeOpenButton")!.Click += async (_, _) =>
+        {
+            SetText("YouTubeStatusText", "BAŞLATILIYOR");
+            SetText("YouTubePathText", "YouTFast açılıyor...");
+            SetEnabled("YouTubeOpenButton", false);
+            if (!await _youtubeHost.StartAsync())
+            {
+                SetText("YouTubeStatusText", "MOTOR YOK");
+                SetText("YouTubePathText", "YouTube\\youtfast.exe bulunamadı");
+                SetEnabled("YouTubeOpenButton", true);
+            }
+        };
+
+        FindControl<Button>("YouTubeCloseButton")!.Click += async (_, _) => await _youtubeHost.StopAsync();
     }
 
     private async Task DisconnectAdapterAsync()
@@ -158,7 +228,6 @@ public partial class MainWindow : Window
         SetText("MediaPathText", "MEDYA KLASÖRÜ: " + path);
         SetText("HomeMediaPathText", "MEDYA KLASÖRÜ: " + path);
         WireOpenMediaButton("OpenMediaButton", path);
-        WireOpenMediaButton("HomeOpenMediaButton", path);
     }
 
     private void WireOpenMediaButton(string name, string path)
@@ -307,6 +376,7 @@ public partial class MainWindow : Window
     private void ApplyState(VehicleState s)
     {
         SetText("RpmValue", F(s.Rpm, s.RpmValid, "0", " rpm")); SetText("SpeedValue", F(s.SpeedKmh, s.SpeedValid, "0.0", " km/h")); SetText("BoostValue", F(s.BoostBar, s.BoostValid, "0.000", " bar")); SetText("PedalValue", F(s.PedalPercent, s.PedalValid, "0.0", " %")); SetText("CoolantValue", F(s.CoolantC, s.CoolantValid, "0.0", " °C")); SetText("VoltageValue", F(s.Voltage, s.VoltageValid, "0.00", " V")); SetText("FuelTempValue", F(s.FuelTempC, s.FuelTempValid, "0.0", " °C")); SetText("IntakeTempValue", F(s.IntakeTempC, s.IntakeTempValid, "0.0", " °C")); SetText("MafValue", F(s.MafGps, s.MafValid, "0.00", " g/s")); SetText("InjectionValue", F(s.InjectionMgStroke, s.InjectionValid, "0.00", " mg/st")); SetText("BrakeValue", s.BrakeValid ? (s.BrakePressed ? "BASILI" : "SERBEST") : "—"); SetText("ClutchValue", s.ClutchValid ? (s.ClutchPressed ? "BASILI" : "SERBEST") : "—");
+        SetText("CarPlayRpmValue", F(s.Rpm, s.RpmValid, "0", " rpm")); SetText("CarPlaySpeedValue", F(s.SpeedKmh, s.SpeedValid, "0.0", " km/h")); SetText("CarPlayVoltageValue", F(s.Voltage, s.VoltageValid, "0.00", " V"));
     }
 
     private void RefreshRemoteStatus() => SetText("RemoteStatusText", _remote.IsConfigured ? "REMOTE: HAZIR" : "REMOTE: AYAR BEKLİYOR");
@@ -323,4 +393,3 @@ public partial class MainWindow : Window
     private void SetEnabled(string name, bool value) { var c = FindControl<Button>(name); if (c is not null) c.IsEnabled = value; }
     private void SetTestButtons(bool value) { foreach (var n in new[] { "TestEngineButton", "TestAbsButton", "TestCentralButton", "TestClusterButton", "TestSteeringButton", "TestAllButton" }) SetEnabled(n, value); }
 }
-

@@ -46,6 +46,45 @@ jobs:
           dotnet publish 'src/PoloOS.Updater/PoloOS.Updater.csproj' -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o $updaterOut
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Add lightweight YouTube player
+        shell: pwsh
+        run: |
+          $cfg = Get-Content 'build/youtfast.json' -Raw | ConvertFrom-Json
+          $temp = Join-Path $env:RUNNER_TEMP "youtfast-$($cfg.version).zip"
+          $extract = Join-Path $env:RUNNER_TEMP "youtfast-$($cfg.version)"
+          $youtube = Join-Path $env:GITHUB_WORKSPACE 'publish/PoloOS_win-x64/YouTube'
+          New-Item -ItemType Directory -Force -Path $youtube | Out-Null
+          Invoke-WebRequest -Uri $cfg.url -OutFile $temp
+          $hash = (Get-FileHash -Algorithm SHA256 $temp).Hash
+          if ($hash -ne $cfg.sha256) { throw "YouTFast SHA256 mismatch: $hash" }
+          Expand-Archive -LiteralPath $temp -DestinationPath $extract -Force
+          $root = Get-ChildItem -LiteralPath $extract -Directory | Select-Object -First 1
+          Get-ChildItem -LiteralPath $root.FullName -Force | Copy-Item -Destination $youtube -Recurse -Force
+
+          Invoke-WebRequest -Uri 'https://github.com/yt-dlp/yt-dlp/releases/download/2026.10.26/yt-dlp.exe' -OutFile (Join-Path $youtube 'yt-dlp.exe')
+          $denoZip = Join-Path $env:RUNNER_TEMP 'deno-windows-x86_64.zip'
+          $denoExtract = Join-Path $env:RUNNER_TEMP 'deno-windows-x86_64'
+          Invoke-WebRequest -Uri 'https://github.com/denoland/deno/releases/download/v2.9.8/deno-x86_64-pc-windows-msvc.zip' -OutFile $denoZip
+          Expand-Archive -LiteralPath $denoZip -DestinationPath $denoExtract -Force
+          Copy-Item -LiteralPath (Join-Path $denoExtract 'deno.exe') -Destination (Join-Path $youtube 'deno.exe') -Force
+          "YouTFast $($cfg.version), yt-dlp and Deno packaged in YouTube/" | Set-Content (Join-Path $youtube 'POLOOS-INTEGRATION.txt')
+
+      - name: Add ChairPlay CarPlay receiver
+        shell: pwsh
+        run: |
+          $cfg = Get-Content 'build/chairplay.json' -Raw | ConvertFrom-Json
+          $temp = Join-Path $env:RUNNER_TEMP "chairplay-$($cfg.version).zip"
+          $extract = Join-Path $env:RUNNER_TEMP "chairplay-$($cfg.version)"
+          $carplay = Join-Path $env:GITHUB_WORKSPACE 'publish/PoloOS_win-x64/CarPlay'
+          New-Item -ItemType Directory -Force -Path $carplay | Out-Null
+          Invoke-WebRequest -Uri $cfg.url -OutFile $temp
+          $hash = (Get-FileHash -Algorithm SHA256 $temp).Hash
+          if ($hash -ne $cfg.sha256) { throw "ChairPlay SHA256 mismatch: $hash" }
+          Expand-Archive -LiteralPath $temp -DestinationPath $extract -Force
+          $root = Get-ChildItem -LiteralPath $extract -Directory | Select-Object -First 1
+          Get-ChildItem -LiteralPath $root.FullName -Force | Copy-Item -Destination $carplay -Recurse -Force
+          "ChairPlay $($cfg.version) packaged in CarPlay/" | Set-Content (Join-Path $carplay 'POLOOS-INTEGRATION.txt')
+
       - name: Package and hash
         shell: pwsh
         run: |

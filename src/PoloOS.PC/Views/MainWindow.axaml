@@ -2,6 +2,7 @@
     x:Class="PoloOS.PC.Views.MainWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     Title="PoloOS"
     Width="1280"
     Height="800"
@@ -12,64 +13,90 @@
     FontFamily="Segoe UI">
 
   <Window.Styles>
-    <Style Selector="TextBlock.muted"><Setter Property="Foreground" Value="#8F969D"/><Setter Property="FontSize" Value="12"/></Style>
-    <Style Selector="TextBlock.caption"><Setter Property="Foreground" Value="#8F969D"/><Setter Property="FontSize" Value="11"/></Style>
+    <Style Selector="TextBlock.muted"><Setter Property="Foreground" Value="#AAB2B9"/><Setter Property="FontSize" Value="13"/></Style>
+    <Style Selector="TextBlock.caption"><Setter Property="Foreground" Value="#8F969D"/><Setter Property="FontSize" Value="12"/></Style>
     <Style Selector="TextBlock.value"><Setter Property="FontFamily" Value="Consolas"/><Setter Property="FontSize" Value="24"/><Setter Property="FontWeight" Value="SemiBold"/><Setter Property="Foreground" Value="#F2F4F5"/></Style>
+    <Style Selector="TextBlock.screenTitle"><Setter Property="FontSize" Value="32"/><Setter Property="FontWeight" Value="SemiBold"/><Setter Property="Foreground" Value="#F2F4F5"/></Style>
+    <Style Selector="TextBlock.screenSubtitle"><Setter Property="FontSize" Value="15"/><Setter Property="Foreground" Value="#AAB2B9"/></Style>
     <Style Selector="Border.card"><Setter Property="Background" Value="#191D21"/><Setter Property="BorderBrush" Value="#2A3036"/><Setter Property="BorderThickness" Value="1"/><Setter Property="CornerRadius" Value="6"/><Setter Property="Padding" Value="18"/></Style>
     <Style Selector="Button"><Setter Property="Background" Value="#20252A"/><Setter Property="Foreground" Value="#E9EDF0"/><Setter Property="BorderBrush" Value="#343B42"/><Setter Property="BorderThickness" Value="1"/><Setter Property="CornerRadius" Value="4"/><Setter Property="Padding" Value="12,8"/><Setter Property="MinHeight" Value="36"/></Style>
     <Style Selector="Button:pointerover"><Setter Property="Background" Value="#2A3138"/></Style>
-    <Style Selector="Button.nav"><Setter Property="Background" Value="Transparent"/><Setter Property="BorderBrush" Value="Transparent"/><Setter Property="HorizontalContentAlignment" Value="Left"/><Setter Property="Padding" Value="16,12"/><Setter Property="MinHeight" Value="48"/></Style>
+    <Style Selector="Button.nav"><Setter Property="Background" Value="Transparent"/><Setter Property="BorderBrush" Value="Transparent"/><Setter Property="HorizontalContentAlignment" Value="Left"/><Setter Property="Padding" Value="16,14"/><Setter Property="MinHeight" Value="56"/><Setter Property="FontSize" Value="16"/></Style>
     <Style Selector="Button.nav:pointerover"><Setter Property="Background" Value="#20252A"/></Style>
     <Style Selector="Button.nav.active"><Setter Property="Background" Value="#2A3138"/><Setter Property="BorderBrush" Value="#66717A"/></Style>
+    <Style Selector="Button.headerHome"><Setter Property="Background" Value="Transparent"/><Setter Property="BorderBrush" Value="Transparent"/><Setter Property="Padding" Value="8,10"/><Setter Property="FontSize" Value="19"/></Style>
+    <Style Selector="Button.headerHome:pointerover"><Setter Property="Background" Value="#242A30"/></Style>
+    <Style Selector="Button.tile"><Setter Property="Background" Value="#191D21"/><Setter Property="Foreground" Value="#F2F4F5"/><Setter Property="BorderBrush" Value="#303941"/><Setter Property="BorderThickness" Value="1"/><Setter Property="CornerRadius" Value="10"/><Setter Property="Padding" Value="18"/><Setter Property="Margin" Value="10"/><Setter Property="MinHeight" Value="210"/><Setter Property="FontSize" Value="18"/><Setter Property="HorizontalAlignment" Value="Stretch"/><Setter Property="VerticalAlignment" Value="Stretch"/><Setter Property="HorizontalContentAlignment" Value="Center"/><Setter Property="VerticalContentAlignment" Value="Center"/></Style>
+    <Style Selector="Button.tile:pointerover"><Setter Property="Background" Value="#26313A"/><Setter Property="BorderBrush" Value="#778894"/></Style>
+    <Style Selector="Button.primary"><Setter Property="Background" Value="#D71920"/><Setter Property="BorderBrush" Value="#F0444B"/><Setter Property="Foreground" Value="White"/><Setter Property="FontWeight" Value="SemiBold"/><Setter Property="MinHeight" Value="48"/><Setter Property="Padding" Value="18,10"/></Style>
+    <Style Selector="Button.primary:pointerover"><Setter Property="Background" Value="#F0444B"/></Style>
+    <Style Selector="Button.danger"><Setter Property="Background" Value="#381A1D"/><Setter Property="BorderBrush" Value="#9E343A"/><Setter Property="Foreground" Value="#FFB8BB"/><Setter Property="MinHeight" Value="48"/><Setter Property="Padding" Value="18,10"/></Style>
+    <Style Selector="Border.projection"><Setter Property="Background" Value="#080A0C"/><Setter Property="BorderBrush" Value="#343A40"/><Setter Property="BorderThickness" Value="1"/><Setter Property="CornerRadius" Value="12"/></Style>
+    <Style Selector="Border.statusPill"><Setter Property="Background" Value="#20252A"/><Setter Property="BorderBrush" Value="#343B42"/><Setter Property="BorderThickness" Value="1"/><Setter Property="CornerRadius" Value="18"/><Setter Property="Padding" Value="12,6"/></Style>
     <Style Selector="TabControl"><Setter Property="Background" Value="Transparent"/></Style>
     <Style Selector="TabItem"><Setter Property="Padding" Value="16,9"/></Style>
     <Style Selector="ListBox"><Setter Property="Background" Value="#131619"/><Setter Property="BorderBrush" Value="#2A3036"/><Setter Property="BorderThickness" Value="1"/></Style>
   </Window.Styles>
 
-  <Grid RowDefinitions="64,*" ColumnDefinitions="200,*" Background="#101214">
-    <Border Grid.Row="0" Grid.ColumnSpan="2" Background="#171A1D" BorderBrush="#2A3036" BorderThickness="0,0,0,1" Padding="20,0">
-      <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
-        <StackPanel Orientation="Horizontal" Spacing="10"><TextBlock Text="PoloOS" FontSize="22" FontWeight="Bold" Foreground="#F2F4F5"/><TextBlock Text="CAR PC" Classes="muted" VerticalAlignment="Center"/></StackPanel>
-        <StackPanel Grid.Column="1" HorizontalAlignment="Center"><TextBlock x:Name="PageTitle" Text="HOME" HorizontalAlignment="Center" FontSize="15" FontWeight="SemiBold"/><TextBlock x:Name="PageSubtitle" Text="Polo 9N3 Sport Edition" Classes="caption" HorizontalAlignment="Center"/></StackPanel>
-        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="18" VerticalAlignment="Center"><StackPanel><TextBlock x:Name="ClockText" Text="00:00" HorizontalAlignment="Right" FontSize="16" FontWeight="SemiBold"/><TextBlock x:Name="DateText" Text="00.00.0000" Classes="caption" HorizontalAlignment="Right"/></StackPanel><TextBlock Text="GPS  •  BT  •  Wi-Fi" Classes="muted" VerticalAlignment="Center"/><TextBlock x:Name="GlobalStatusText" Text="HAZIR" Foreground="#B8C0C6" VerticalAlignment="Center"/><TextBlock x:Name="VersionText" Text="v0.5.10.9.23" Classes="caption" VerticalAlignment="Center"/></StackPanel>
+  <Grid RowDefinitions="84,*" Background="#101214">
+    <Border Grid.Row="0" Background="#171A1D" BorderBrush="#2A3036" BorderThickness="0,0,0,1" Padding="24,0">
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto" VerticalAlignment="Center">
+        <Button x:Name="HomeButton" Classes="headerHome" Tag="home" Click="NavButton_Click"><StackPanel Orientation="Horizontal" Spacing="12"><materialIcons:MaterialIcon Kind="Home" Width="28" Height="28"/><TextBlock Text="PoloOS" FontSize="22" FontWeight="Bold" VerticalAlignment="Center"/></StackPanel></Button>
+        <StackPanel Grid.Column="1" Margin="28,0,0,0" VerticalAlignment="Center"><TextBlock x:Name="PageTitle" Text="HOME" FontSize="18" FontWeight="SemiBold"/><TextBlock x:Name="PageSubtitle" Text="Polo 9N3 Multimedia Center" Classes="caption"/></StackPanel>
+        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="14" VerticalAlignment="Center"><TextBlock Text="GPS  •  BT  •  Wi-Fi" Classes="muted" VerticalAlignment="Center"/><TextBlock x:Name="GlobalStatusText" Text="HAZIR" Foreground="#B8C0C6" VerticalAlignment="Center"/><TextBlock x:Name="VersionText" Text="v0.5.10.9.23" Classes="caption" VerticalAlignment="Center"/></StackPanel>
+        <StackPanel Grid.Column="3" Margin="26,0,0,0"><TextBlock x:Name="ClockText" Text="00:00" HorizontalAlignment="Right" FontSize="22" FontWeight="SemiBold"/><TextBlock x:Name="DateText" Text="00.00.0000" Classes="caption" HorizontalAlignment="Right"/></StackPanel>
       </Grid>
     </Border>
 
-    <Border Grid.Row="1" Grid.Column="0" Background="#15181B" BorderBrush="#2A3036" BorderThickness="0,0,1,0" Padding="10,18">
-      <StackPanel Spacing="4">
-        <TextBlock Text="SYSTEM" Classes="caption" Margin="8,0,0,8"/>
-        <Button x:Name="HomeButton" Classes="nav active" Tag="home" Content="⌂   HOME" Click="NavButton_Click"/>
-        <Button x:Name="MusicButton" Classes="nav" Tag="music" Content="♫   MEDIA" Click="NavButton_Click"/>
-        <Button x:Name="NavigationButton" Classes="nav" Tag="navigation" Content="⌖   NAVIGATION" Click="NavButton_Click"/>
-        <Button x:Name="VehicleButton" Classes="nav" Tag="vehicle" Content="▣   VEHICLE" Click="NavButton_Click"/>
-        <Button x:Name="DiagButton" Classes="nav" Tag="diag" Content="⚠   VAG DIAG" Click="NavButton_Click"/>
-        <Button x:Name="LogsButton" Classes="nav" Tag="logs" Content="≡   LOGS" Click="NavButton_Click"/>
-        <Button x:Name="BluetoothButton" Classes="nav" Tag="bluetooth" Content="⌁   BLUETOOTH" Click="NavButton_Click"/>
-        <Button x:Name="SettingsButton" Classes="nav" Tag="settings" Content="⚙   SETTINGS" Click="NavButton_Click"/>
-        <Border Height="1" Background="#2A3036" Margin="8,14,8,8"/>
-        <TextBlock Text="LOW RESOURCE MODE" Classes="caption" Margin="8,0,0,0"/>
-      </StackPanel>
-    </Border>
-
-    <Grid Grid.Row="1" Grid.Column="1" Margin="26">
-      <Grid x:Name="HomePage" RowDefinitions="Auto,Auto,*,Auto">
-        <StackPanel><TextBlock Text="MULTIMEDIA HOME" FontSize="30" FontWeight="SemiBold"/><TextBlock Text="Müzik ve videolar için hızlı erişim merkezi." Classes="muted" Margin="0,5,0,0"/></StackPanel>
-        <Grid Grid.Row="1" ColumnDefinitions="*,*,*" ColumnSpacing="12" Margin="0,20,0,12">
-          <Button x:Name="HomeMediaButton" Tag="music" Content="♫   MEDIA MENÜSÜ" Click="NavButton_Click" MinHeight="56"/>
-          <Button x:Name="HomeOpenMediaButton" Grid.Column="1" Content="▣   MEDYA KLASÖRÜNÜ AÇ" MinHeight="56"/>
-          <Button x:Name="HomeVehicleButton" Grid.Column="2" Tag="vehicle" Content="▣   ARAÇ DURUMU" Click="NavButton_Click" MinHeight="56"/>
-        </Grid>
-        <Grid Grid.Row="2" ColumnDefinitions="2*,*,*" RowDefinitions="*,*" ColumnSpacing="12" RowSpacing="12">
-          <Border Classes="card" Grid.RowSpan="2"><StackPanel Spacing="12"><TextBlock Text="MEDIA CENTER" Classes="caption"/><TextBlock Text="Hazır" FontSize="34" FontWeight="SemiBold"/><TextBlock Text="Harici oynatıcı modu" FontSize="20"/><TextBlock x:Name="HomeMediaPathText" Text="Media klasörü hazırlanıyor..." Classes="muted" TextWrapping="Wrap"/><TextBlock Text="PoloOS video motoru çalıştırmaz; dosyalar Windows’un varsayılan oynatıcısıyla açılır." Classes="caption" TextWrapping="Wrap"/><Button Content="MEDIA EKRANINA GİT" Tag="music" Click="NavButton_Click" HorizontalAlignment="Left"/></StackPanel></Border>
-          <Border Grid.Column="1" Classes="card"><StackPanel><TextBlock Text="CONNECTION" Classes="caption"/><TextBlock Text="GPS  •  BT  •  Wi-Fi" FontSize="18" Margin="0,10,0,4"/><TextBlock Text="Yer tutucu durum göstergeleri" Classes="muted"/></StackPanel></Border>
-          <Border Grid.Column="2" Classes="card"><StackPanel><TextBlock Text="SYSTEM" Classes="caption"/><TextBlock Text="LOW RESOURCE" FontSize="20" Margin="0,10,0,4"/><TextBlock Text="i3 / 4 GB hedefi" Classes="muted"/></StackPanel></Border>
-          <Border Grid.Row="1" Grid.Column="1" Classes="card"><StackPanel><TextBlock Text="VEHICLE" Classes="caption"/><TextBlock Text="Polo 9N3" FontSize="20" Margin="0,10,0,4"/><TextBlock Text="Canlı veri için hazır" Classes="muted"/></StackPanel></Border>
-          <Border Grid.Row="1" Grid.Column="2" Classes="card"><StackPanel><TextBlock Text="VAG DIAG" Classes="caption"/><TextBlock Text="READ ONLY" FontSize="20" Margin="0,10,0,4"/><TextBlock Text="Demo / tanılama alanı" Classes="muted"/></StackPanel></Border>
-        </Grid>
-        <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="8" Margin="0,14,0,0"><Button x:Name="HomeDiagButton" Tag="diag" Content="VAG DIAG EKRANINI AÇ" Click="NavButton_Click"/><Button Content="AYARLAR" Tag="settings" Click="NavButton_Click"/></StackPanel>
+    <Grid Grid.Row="1" Margin="34">
+      <Grid x:Name="HomePage" RowDefinitions="Auto,*">
+        <StackPanel><TextBlock Text="MULTIMEDIA HOME" Classes="screenTitle"/><TextBlock Text="Bir uygulama seçmek için dokun." Classes="screenSubtitle" Margin="0,6,0,0"/></StackPanel>
+          <UniformGrid Grid.Row="1" Rows="2" Columns="5" Margin="0,32,0,0">
+          <Button Classes="tile" Tag="music" Click="NavButton_Click"><StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="14"><materialIcons:MaterialIcon Kind="Music" Width="54" Height="54"/><TextBlock Text="MEDIA" HorizontalAlignment="Center"/></StackPanel></Button>
+          <Button Classes="tile" Tag="youtube" Click="NavButton_Click"><StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="14"><materialIcons:MaterialIcon Kind="PlayCircle" Width="54" Height="54"/><TextBlock Text="YOUTUBE LITE" HorizontalAlignment="Center"/></StackPanel></Button>
+          <Button Classes="tile" Tag="carplay" Click="NavButton_Click"><StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="14"><materialIcons:MaterialIcon Kind="Apple" Width="54" Height="54"/><TextBlock Text="CARPLAY" HorizontalAlignment="Center"/></StackPanel></Button>
+          <Button Classes="tile" Tag="navigation" Click="NavButton_Click"><StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="14"><materialIcons:MaterialIcon Kind="MapMarker" Width="54" Height="54"/><TextBlock Text="NAVIGATION" HorizontalAlignment="Center"/></StackPanel></Button>
+          <Button Classes="tile" Tag="vehicle" Click="NavButton_Click"><StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="14"><materialIcons:MaterialIcon Kind="Car" Width="54" Height="54"/><TextBlock Text="VEHICLE" HorizontalAlignment="Center"/></StackPanel></Button>
+          <Button Classes="tile" Tag="diag" Click="NavButton_Click"><StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="14"><materialIcons:MaterialIcon Kind="AlertCircle" Width="54" Height="54"/><TextBlock Text="VAG DIAG" HorizontalAlignment="Center"/></StackPanel></Button>
+          <Button Classes="tile" Tag="logs" Click="NavButton_Click"><StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="14"><materialIcons:MaterialIcon Kind="FileDocument" Width="54" Height="54"/><TextBlock Text="LOGS" HorizontalAlignment="Center"/></StackPanel></Button>
+          <Button Classes="tile" Tag="bluetooth" Click="NavButton_Click"><StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="14"><materialIcons:MaterialIcon Kind="Bluetooth" Width="54" Height="54"/><TextBlock Text="BLUETOOTH" HorizontalAlignment="Center"/></StackPanel></Button>
+          <Button Classes="tile" Tag="settings" Click="NavButton_Click"><StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="14"><materialIcons:MaterialIcon Kind="Cog" Width="54" Height="54"/><TextBlock Text="SETTINGS" HorizontalAlignment="Center"/></StackPanel></Button>
+          <Button Classes="tile" Tag="about" Click="NavButton_Click"><StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="14"><materialIcons:MaterialIcon Kind="Information" Width="54" Height="54"/><TextBlock Text="ABOUT POLOOS" HorizontalAlignment="Center"/></StackPanel></Button>
+        </UniformGrid>
       </Grid>
 
       <Grid x:Name="MusicPage" IsVisible="False"><Border Classes="card" VerticalAlignment="Top"><StackPanel Spacing="12"><TextBlock Text="MEDIA" FontSize="28"/><TextBlock Text="Müzik ve videoları harici oynatıcıyla aç." Classes="muted"/><TextBlock x:Name="MediaPathText" Text="Klasör hazırlanıyor..." Classes="caption" TextWrapping="Wrap"/><Button x:Name="OpenMediaButton" Content="MEDYA KLASÖRÜNÜ AÇ" HorizontalAlignment="Left"/><TextBlock Text="Dosyalar Windows’un varsayılan oynatıcısıyla açılır. VLC varsayılan seçiliyse VLC kullanılır." Classes="caption" TextWrapping="Wrap"/></StackPanel></Border></Grid>
+      <Grid x:Name="YouTubePage" IsVisible="False"><Border Classes="projection" Padding="34" VerticalAlignment="Top"><StackPanel Spacing="18"><TextBlock Text="YOUTUBE LITE" FontSize="32" FontWeight="SemiBold"/><TextBlock Text="Düşük kaynak tüketimli YouTFast oynatıcısı." Classes="muted"/><Border Classes="card"><StackPanel Spacing="10"><TextBlock x:Name="YouTubeStatusText" Text="HAZIR" FontSize="20" FontWeight="SemiBold"/><TextBlock x:Name="YouTubePathText" Text="YouTube motoru bekliyor" Classes="caption" TextWrapping="Wrap"/><TextBlock Text="YouTFast, PoloOS yanında YouTube klasöründen çalışır. yt-dlp ve Deno, GitHub paketine otomatik eklenir." Classes="caption" TextWrapping="Wrap"/></StackPanel></Border><StackPanel Orientation="Horizontal" Spacing="12"><Button x:Name="YouTubeOpenButton" Classes="primary" Content="YOUTUBE LITE'I AÇ"/><Button x:Name="YouTubeCloseButton" Classes="danger" Content="YOUTUBE'U KAPAT" IsEnabled="False"/></StackPanel><TextBlock Text="Video oynatmayı araç park hâlindeyken kullanın." Classes="caption"/></StackPanel></Border></Grid>
+      <Grid x:Name="CarPlayPage" IsVisible="False">
+        <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,320" ColumnSpacing="18">
+          <Grid Grid.ColumnSpan="2" ColumnDefinitions="*,Auto" Margin="0,0,0,14">
+            <StackPanel><TextBlock Text="CARPLAY" Classes="screenTitle"/><TextBlock Text="iPhone bağlantısı ve araç ekranı" Classes="screenSubtitle" Margin="0,6,0,0"/></StackPanel>
+            <Border Grid.Column="1" Classes="statusPill" VerticalAlignment="Center"><StackPanel Orientation="Horizontal" Spacing="8"><Ellipse Width="10" Height="10" Fill="#87919A"/><TextBlock x:Name="CarPlayStatusText" Text="BAĞLI DEĞİL" VerticalAlignment="Center"/></StackPanel></Border>
+          </Grid>
+          <Border Grid.Row="1" Classes="projection" Padding="26">
+            <Grid RowDefinitions="*,Auto">
+              <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="16">
+                <materialIcons:MaterialIcon Kind="Apple" Width="88" Height="88" Foreground="#68737D" HorizontalAlignment="Center"/>
+                <TextBlock Text="POLOOS CARPLAY" FontSize="30" FontWeight="SemiBold" Foreground="#E9EDF0" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="CarPlayProjectionText" Text="iPhone bağlantısı bekleniyor" Classes="muted" HorizontalAlignment="Center"/>
+                <TextBlock Text="Gerçek bağlantı için PoloOS yanında CarPlay\\ChairPlay.exe bulunmalıdır" Classes="caption" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+              </StackPanel>
+              <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
+                <Button x:Name="CarPlayConnectButton" Classes="primary" Content="iPHONE BAĞLA"/>
+                <Button x:Name="CarPlayDisconnectButton" Classes="danger" Content="BAĞLANTIYI KES" IsEnabled="False"/>
+              </StackPanel>
+            </Grid>
+          </Border>
+          <Border Grid.Row="1" Grid.Column="1" Classes="card" Padding="18">
+            <StackPanel Spacing="16">
+              <StackPanel><TextBlock Text="ARAÇ DURUMU" FontSize="18" FontWeight="SemiBold"/><TextBlock Text="CarPlay üzerinde açılabilir panel" Classes="caption" Margin="0,4,0,0"/></StackPanel>
+              <Border Background="#111417" CornerRadius="8" Padding="14"><StackPanel Spacing="12"><TextBlock Text="READ ONLY OBD" Foreground="#E10600" FontWeight="SemiBold"/><Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" RowSpacing="10"><TextBlock Text="RPM" Classes="muted"/><TextBlock x:Name="CarPlayRpmValue" Grid.Column="1" Classes="value" FontSize="19" Text="—"/><TextBlock Grid.Row="1" Text="HIZ" Classes="muted"/><TextBlock x:Name="CarPlaySpeedValue" Grid.Row="1" Grid.Column="1" Classes="value" FontSize="19" Text="—"/><TextBlock Grid.Row="2" Text="VOLTAJ" Classes="muted"/><TextBlock x:Name="CarPlayVoltageValue" Grid.Row="2" Grid.Column="1" Classes="value" FontSize="19" Text="—"/></Grid></StackPanel></Border>
+              <TextBlock Text="OBD paneli CarPlay bağlantısı geldiğinde ekranda gösterilecek. Araç ECU'suna yazma işlemi yapılmaz." Classes="caption" TextWrapping="Wrap"/>
+              <Button x:Name="CarPlayAdapterButton" Content="ADAPTÖR BAĞLANTISINI KES" IsEnabled="False"/>
+            </StackPanel>
+          </Border>
+        </Grid>
+      </Grid>
       <Grid x:Name="NavigationPage" IsVisible="False"><Border Classes="card" VerticalAlignment="Top"><StackPanel Spacing="10"><TextBlock Text="NAVIGATION" FontSize="28"/><TextBlock Text="Hafif offline navigasyon için ayrılmış alan." Classes="muted"/><TextBlock Text="Ağır web haritası/WebView kullanılmayacak." Classes="muted"/></StackPanel></Border></Grid>
 
       <Grid x:Name="VehiclePage" IsVisible="False">
@@ -81,7 +108,7 @@
       <Grid x:Name="LogsPage" IsVisible="False"><Grid RowDefinitions="Auto,Auto,*"><WrapPanel Orientation="Horizontal" Margin="0,0,0,10"><Button x:Name="OpenLogsButton" Content="LOG KLASÖRÜ" Margin="0,0,6,6"/><Button x:Name="CopyLogButton" Content="KOPYALA" Margin="0,0,6,6"/><Button x:Name="ClearLogButton" Content="EKRANI TEMİZLE" Margin="0,0,6,6"/><Button x:Name="UploadLatestLogButton" Content="SON LOGU YÜKLE" Margin="0,0,6,6"/></WrapPanel><Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,10"><TextBlock x:Name="RemoteStatusText" Text="REMOTE: AYAR BEKLİYOR" Classes="muted"/><TextBlock x:Name="LastLogText" Grid.Column="1" Text="SON LOG: —" Classes="caption" Margin="16,0,0,0"/><TextBlock x:Name="LogCountText" Grid.Column="2" Text="0 satır" Classes="caption" Margin="16,0,0,0"/></Grid><ListBox Grid.Row="2" x:Name="LogList" FontFamily="Consolas" FontSize="11"/></Grid></Grid>
       <Grid x:Name="BluetoothPage" IsVisible="False"><Border Classes="card" VerticalAlignment="Top"><StackPanel Spacing="10"><TextBlock Text="BLUETOOTH" FontSize="28"/><TextBlock Text="Bluetooth/telefon modülü için ayrılmış alan." Classes="muted"/><TextBlock Text="Bağlantı servisi eklendiğinde bu sayfa kullanılacak." Classes="muted"/></StackPanel></Border></Grid>
       <Grid x:Name="SettingsPage" IsVisible="False"><Grid RowDefinitions="Auto,Auto,Auto,*"><TextBlock Text="SETTINGS" FontSize="28" Margin="0,0,0,18"/><Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,12"><TextBlock Text="REMOTE SUNUCU" Classes="muted" VerticalAlignment="Center" Margin="0,0,12,0"/><TextBox x:Name="RemoteBaseUrlBox" Grid.Column="1" PlaceholderText="https://poloos-remote.../"/><Button x:Name="SaveRemoteButton" Grid.Column="2" Content="KAYDET" Margin="8,0,0,0"/></Grid><Grid Grid.Row="2" ColumnDefinitions="*,Auto"><TextBlock Text="Güncelleme kontrolü ve log yükleme mevcut servisler üzerinden çalışır." Classes="muted" VerticalAlignment="Center"/><Button x:Name="UpdateButton" Grid.Column="1" Content="GÜNCELLEME KONTROL"/></Grid></Grid></Grid>
+      <Grid x:Name="AboutPage" IsVisible="False"><Border Classes="card" VerticalAlignment="Top"><StackPanel Spacing="12"><TextBlock Text="ABOUT POLOOS" FontSize="28"/><TextBlock Text="Polo 9N3 için hafif, dokunmatik multimedya ve araç bilgi merkezi." Classes="muted" TextWrapping="Wrap"/><TextBlock Text="CarPlay ve OBD modülleri birbirinden bağımsız tasarlanır. Bu sayede bağlantı katmanı değişse bile PoloOS arayüzü korunur." Classes="caption" TextWrapping="Wrap"/><TextBlock Text="Tanılama işlemleri: READ ONLY" Foreground="#E10600" FontWeight="SemiBold"/></StackPanel></Border></Grid>
     </Grid>
   </Grid>
 </Window>
-
