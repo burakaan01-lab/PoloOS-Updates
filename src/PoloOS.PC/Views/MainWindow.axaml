@@ -39,7 +39,7 @@
       <StackPanel Spacing="4">
         <TextBlock Text="SYSTEM" Classes="caption" Margin="8,0,0,8"/>
         <Button x:Name="HomeButton" Classes="nav active" Tag="home" Content="⌂   HOME" Click="NavButton_Click"/>
-        <Button x:Name="MusicButton" Classes="nav" Tag="music" Content="♫   MUSIC" Click="NavButton_Click"/>
+        <Button x:Name="MusicButton" Classes="nav" Tag="music" Content="♫   MEDIA" Click="NavButton_Click"/>
         <Button x:Name="NavigationButton" Classes="nav" Tag="navigation" Content="⌖   NAVIGATION" Click="NavButton_Click"/>
         <Button x:Name="VehicleButton" Classes="nav" Tag="vehicle" Content="▣   VEHICLE" Click="NavButton_Click"/>
         <Button x:Name="DiagButton" Classes="nav" Tag="diag" Content="⚠   VAG DIAG" Click="NavButton_Click"/>
@@ -65,7 +65,7 @@
         <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8"><Button x:Name="HomeVehicleButton" Tag="vehicle" Content="VEHICLE EKRANINI AÇ" Click="NavButton_Click"/><Button x:Name="HomeDiagButton" Tag="diag" Content="VAG DIAG EKRANINI AÇ" Click="NavButton_Click"/></StackPanel>
       </Grid>
 
-      <Grid x:Name="MusicPage" IsVisible="False"><Border Classes="card" VerticalAlignment="Top"><StackPanel Spacing="10"><TextBlock Text="MUSIC" FontSize="28"/><TextBlock Text="Bu ekran yerel medya modülünün temel alanıdır." Classes="muted"/><TextBlock Text="Oynatıcı, klasör tarama ve ses kontrolü daha sonra eklenecek." Classes="muted"/></StackPanel></Border></Grid>
+      <Grid x:Name="MusicPage" IsVisible="False"><Border Classes="card" VerticalAlignment="Top"><StackPanel Spacing="12"><TextBlock Text="MEDIA" FontSize="28"/><TextBlock Text="Müzik ve videoları harici oynatıcıyla aç." Classes="muted"/><TextBlock x:Name="MediaPathText" Text="Klasör hazırlanıyor..." Classes="caption" TextWrapping="Wrap"/><Button x:Name="OpenMediaButton" Content="MEDYA KLASÖRÜNÜ AÇ" HorizontalAlignment="Left"/><TextBlock Text="Dosyalar Windows’un varsayılan oynatıcısıyla açılır. VLC varsayılan seçiliyse VLC kullanılır." Classes="caption" TextWrapping="Wrap"/></StackPanel></Border></Grid>
       <Grid x:Name="NavigationPage" IsVisible="False"><Border Classes="card" VerticalAlignment="Top"><StackPanel Spacing="10"><TextBlock Text="NAVIGATION" FontSize="28"/><TextBlock Text="Hafif offline navigasyon için ayrılmış alan." Classes="muted"/><TextBlock Text="Ağır web haritası/WebView kullanılmayacak." Classes="muted"/></StackPanel></Border></Grid>
 
       <Grid x:Name="VehiclePage" IsVisible="False">
