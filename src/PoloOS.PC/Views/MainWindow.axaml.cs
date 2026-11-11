@@ -14,7 +14,7 @@ namespace PoloOS.PC.Views;
 
 public partial class MainWindow : Window
 {
-    private const string AppVersion = "0.5.10.9.22";
+    private const string AppVersion = "0.5.10.9.23";
     private const int MaxUiLogLines = 400;
     private readonly RealLiveDataService _live = new();
     private readonly RemoteConfig _remote;
@@ -68,7 +68,7 @@ public partial class MainWindow : Window
     {
         var pages = new Dictionary<string, (string Control, string Title, string Subtitle)>(StringComparer.OrdinalIgnoreCase)
         {
-            ["home"] = ("HomePage", "HOME", "Polo 9N3 Sport Edition"),
+            ["home"] = ("HomePage", "HOME", "Polo 9N3 Multimedia Center"),
             ["music"] = ("MusicPage", "MEDIA", "Yerel müzik ve video"),
             ["navigation"] = ("NavigationPage", "NAVIGATION", "Hafif navigasyon altyapısı"),
             ["vehicle"] = ("VehiclePage", "VEHICLE", "Canlı araç verileri"),
@@ -156,7 +156,14 @@ public partial class MainWindow : Window
     {
         var path = EnsureMediaDir();
         SetText("MediaPathText", "MEDYA KLASÖRÜ: " + path);
-        FindControl<Button>("OpenMediaButton")!.Click += (_, _) =>
+        SetText("HomeMediaPathText", "MEDYA KLASÖRÜ: " + path);
+        WireOpenMediaButton("OpenMediaButton", path);
+        WireOpenMediaButton("HomeOpenMediaButton", path);
+    }
+
+    private void WireOpenMediaButton(string name, string path)
+    {
+        FindControl<Button>(name)!.Click += (_, _) =>
         {
             try
             {
