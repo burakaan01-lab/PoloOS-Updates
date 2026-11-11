@@ -1,7 +1,7 @@
 {
   "version": "0.5.10.9.19",
   "packageUrl": "https://github.com/burakaan01-lab/PoloOS-Updates/releases/download/v0.5.10.9.19/PoloOS_0.5.10.9.19_win-x64.zip",
-  "sha256": "E9D8598CE7188D25C4273AA79D9A6720271DDB9281687E0D5553E35EAC7605FA",
+  "sha256": "163F005690938C33B7058A8E31AE713BDB5FE1AE63FF0513DF66AB153AFA6D2F",
   "notes": "Add safe adapter disconnect button for releasing the FTDI/K-Line session",
   "mandatory": false
 }
