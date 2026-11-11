@@ -13,7 +13,7 @@ namespace PoloOS.PC.Views;
 
 public partial class MainWindow : Window
 {
-    private const string AppVersion = "0.5.10.9.16";
+    private const string AppVersion = "0.5.10.9.19";
     private const int MaxUiLogLines = 400;
     private readonly RealLiveDataService _live = new();
     private readonly RemoteConfig _remote;
@@ -55,9 +55,26 @@ public partial class MainWindow : Window
             SetButton("LiveToggleButton", "CANLI VERİYİ DURDUR");
             await _live.StartAsync();
         };
+        FindControl<Button>("AdapterDisconnectButton")!.Click += async (_, _) => await DisconnectAdapterAsync();
         _live.StateReceived += s => Dispatcher.UIThread.Post(() => ApplyState(s));
         _live.Trace += s => Dispatcher.UIThread.Post(() => { AddLog(s); if (s.Contains("BAĞLANDI", StringComparison.OrdinalIgnoreCase)) { SetText("LiveStatusText", "OKUNUYOR"); SetGlobal("LIVE OKUNUYOR"); } else if (s.Contains("RECONNECT", StringComparison.OrdinalIgnoreCase)) SetText("LiveStatusText", "YENİDEN BAĞLANIYOR"); });
         _live.RunningChanged += running => Dispatcher.UIThread.Post(() => { SetButton("LiveToggleButton", running ? "CANLI VERİYİ DURDUR" : "CANLI VERİYİ BAŞLAT"); if (!running) { SetText("LiveStatusText", "DURDU"); if (!_diagBusy) SetGlobal("HAZIR"); } });
+    }
+
+    private async Task DisconnectAdapterAsync()
+    {
+        if (_diagBusy)
+        {
+            AddLog("[ADAPTER] Diagnostik işlemi devam ediyor; işlem bitince adaptör serbest bırakılacak.");
+            return;
+        }
+
+        if (_live.IsRunning)
+            await StopLiveAsync("Adaptör kullanıcı tarafından ayrıldı");
+
+        SetText("LiveStatusText", "ADAPTÖR SERBEST");
+        SetGlobal("ADAPTÖR SERBEST");
+        AddLog("[ADAPTER] Canlı bağlantı kapatıldı; FTDI/K-Line oturumu serbest bırakıldı.");
     }
 
     private void WireDiagnostics()
@@ -223,3 +240,4 @@ public partial class MainWindow : Window
     private void SetEnabled(string name, bool value) { var c = FindControl<Button>(name); if (c is not null) c.IsEnabled = value; }
     private void SetTestButtons(bool value) { foreach (var n in new[] { "TestEngineButton", "TestAbsButton", "TestCentralButton", "TestClusterButton", "TestSteeringButton", "TestAllButton" }) SetEnabled(n, value); }
 }
+
