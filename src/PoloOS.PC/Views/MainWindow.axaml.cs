@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using PoloOS.Diagnostics.Core;
@@ -13,7 +14,7 @@ namespace PoloOS.PC.Views;
 
 public partial class MainWindow : Window
 {
-    private const string AppVersion = "0.5.10.9.19";
+    private const string AppVersion = "0.5.10.9.20";
     private const int MaxUiLogLines = 400;
     private readonly RealLiveDataService _live = new();
     private readonly RemoteConfig _remote;
@@ -38,11 +39,56 @@ public partial class MainWindow : Window
         FindControl<TextBox>("RemoteBaseUrlBox")!.Text = _remote.BaseUrl;
         WireLive(); WireDiagnostics(); WireLog(); WireRemote();
         SetText("VersionText", $"v{AppVersion} • READ ONLY • FTDI 0");
+        SelectPage("home");
         RefreshRemoteStatus();
         AddLog("[SYSTEM] PoloOS Minimal Test Client hazır.");
         AddLog("[SAFE] Diagnostik işlemler READ ONLY.");
         Opened += async (_, _) => { if (_remote.AutoCheckUpdates) await CheckForUpdatesAsync(true); };
         Closing += async (_, _) => { await _live.DisposeAsync(); _updates.Dispose(); _uploads.Dispose(); };
+    }
+
+    private void NavButton_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.Tag is string page)
+            SelectPage(page);
+    }
+
+    private void SelectPage(string page)
+    {
+        var pages = new Dictionary<string, (string Control, string Title, string Subtitle)>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["home"] = ("HomePage", "HOME", "Polo 9N3 Sport Edition"),
+            ["music"] = ("MusicPage", "MUSIC", "Yerel medya"),
+            ["navigation"] = ("NavigationPage", "NAVIGATION", "Hafif navigasyon altyapısı"),
+            ["vehicle"] = ("VehiclePage", "VEHICLE", "Canlı araç verileri"),
+            ["diag"] = ("DiagPage", "VAG DIAG", "Salt-okunur tanılama"),
+            ["logs"] = ("LogsPage", "LOGS", "Yerel ve remote kayıtlar"),
+            ["bluetooth"] = ("BluetoothPage", "BLUETOOTH", "Telefon bağlantısı"),
+            ["settings"] = ("SettingsPage", "SETTINGS", "PoloOS ayarları")
+        };
+        if (!pages.TryGetValue(page, out var selected))
+            return;
+
+        foreach (var item in pages.Values)
+        {
+            var control = FindControl<Control>(item.Control);
+            if (control is not null)
+                control.IsVisible = item.Control == selected.Control;
+        }
+
+        var navButtons = new[] { "HomeButton", "MusicButton", "NavigationButton", "VehicleButton", "DiagButton", "LogsButton", "BluetoothButton", "SettingsButton" };
+        foreach (var name in navButtons)
+        {
+            var button = FindControl<Button>(name);
+            if (button is null)
+                continue;
+            button.Classes.Remove("active");
+            if ((button.Tag as string)?.Equals(page, StringComparison.OrdinalIgnoreCase) == true)
+                button.Classes.Add("active");
+        }
+
+        SetText("PageTitle", selected.Title);
+        SetText("PageSubtitle", selected.Subtitle);
     }
 
     private void WireLive()
