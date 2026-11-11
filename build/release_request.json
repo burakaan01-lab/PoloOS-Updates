@@ -1,5 +1,6 @@
 {
-  "version": "0.5.10.9.18",
-  "notes": "Automatic latest-session beacon: say 'son loga bak' without sending a session ID",
-  "attempt": 2
+  "version": "0.5.10.9.19",
+  "notes": "Add safe adapter disconnect button for releasing the FTDI/K-Line session",
+  "attempt": 1
 }
+
