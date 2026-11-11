@@ -14,7 +14,7 @@ namespace PoloOS.PC.Views;
 
 public partial class MainWindow : Window
 {
-    private const string AppVersion = "0.5.10.9.21";
+    private const string AppVersion = "0.5.10.9.22";
     private const int MaxUiLogLines = 400;
     private readonly RealLiveDataService _live = new();
     private readonly RemoteConfig _remote;
@@ -38,7 +38,7 @@ public partial class MainWindow : Window
         FindControl<ListBox>("TestList")!.ItemsSource = _tests;
         FindControl<ListBox>("LogList")!.ItemsSource = _logs;
         FindControl<TextBox>("RemoteBaseUrlBox")!.Text = _remote.BaseUrl;
-        WireLive(); WireDiagnostics(); WireLog(); WireRemote();
+        WireLive(); WireDiagnostics(); WireLog(); WireMedia(); WireRemote();
         SetText("VersionText", $"v{AppVersion} • READ ONLY • FTDI 0");
         UpdateClock();
         _clockTimer.Tick += (_, _) => UpdateClock();
@@ -69,7 +69,7 @@ public partial class MainWindow : Window
         var pages = new Dictionary<string, (string Control, string Title, string Subtitle)>(StringComparer.OrdinalIgnoreCase)
         {
             ["home"] = ("HomePage", "HOME", "Polo 9N3 Sport Edition"),
-            ["music"] = ("MusicPage", "MUSIC", "Yerel medya"),
+            ["music"] = ("MusicPage", "MEDIA", "Yerel müzik ve video"),
             ["navigation"] = ("NavigationPage", "NAVIGATION", "Hafif navigasyon altyapısı"),
             ["vehicle"] = ("VehiclePage", "VEHICLE", "Canlı araç verileri"),
             ["diag"] = ("DiagPage", "VAG DIAG", "Salt-okunur tanılama"),
@@ -150,6 +150,24 @@ public partial class MainWindow : Window
         FindControl<Button>("ClearLogButton")!.Click += (_, _) => { _logs.Clear(); UpdateLogCount(); };
         FindControl<Button>("OpenLogsButton")!.Click += (_, _) => { try { Process.Start(new ProcessStartInfo { FileName = EnsureLogDir(), UseShellExecute = true }); } catch (Exception ex) { AddLog("[LOG][ERR] " + ex.Message); } };
         FindControl<Button>("CopyLogButton")!.Click += (_, _) => CopyUiLog();
+    }
+
+    private void WireMedia()
+    {
+        var path = EnsureMediaDir();
+        SetText("MediaPathText", "MEDYA KLASÖRÜ: " + path);
+        FindControl<Button>("OpenMediaButton")!.Click += (_, _) =>
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo { FileName = path, UseShellExecute = true });
+                AddLog("[MEDIA] Medya klasörü açıldı.");
+            }
+            catch (Exception ex)
+            {
+                AddLog("[MEDIA][ERR] " + ex.Message);
+            }
+        };
     }
 
     private void WireRemote()
@@ -289,6 +307,7 @@ public partial class MainWindow : Window
     private void AddLog(string text) { _logs.Add($"{DateTime.Now:HH:mm:ss.fff}  {text}"); while (_logs.Count > MaxUiLogLines) _logs.RemoveAt(0); UpdateLogCount(); }
     private void UpdateLogCount() => SetText("LogCountText", $"{_logs.Count} satır");
     private static string EnsureLogDir() { var p = Path.Combine(AppContext.BaseDirectory, "logs"); Directory.CreateDirectory(p); return p; }
+    private static string EnsureMediaDir() { var p = Path.Combine(AppContext.BaseDirectory, "Media"); Directory.CreateDirectory(p); return p; }
     private static string NewLogPath(string prefix) => Path.Combine(EnsureLogDir(), $"{prefix}_{DateTime.Now:yyyyMMdd_HHmmss}.log");
     private static string F(double v, bool valid, string fmt, string suffix) => valid ? v.ToString(fmt) + suffix : "—";
     private void SetGlobal(string text) => SetText("GlobalStatusText", text);
