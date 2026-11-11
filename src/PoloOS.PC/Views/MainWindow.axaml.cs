@@ -14,7 +14,7 @@ namespace PoloOS.PC.Views;
 
 public partial class MainWindow : Window
 {
-    private const string AppVersion = "0.5.10.9.20";
+    private const string AppVersion = "0.5.10.9.21";
     private const int MaxUiLogLines = 400;
     private readonly RealLiveDataService _live = new();
     private readonly RemoteConfig _remote;
@@ -23,6 +23,7 @@ public partial class MainWindow : Window
     private readonly ObservableCollection<string> _dtc = new();
     private readonly ObservableCollection<string> _tests = new();
     private readonly ObservableCollection<string> _logs = new();
+    private readonly DispatcherTimer _clockTimer = new() { Interval = TimeSpan.FromSeconds(1) };
     private bool _diagBusy, _updateBusy, _uploadBusy;
     private UpdateManifest? _availableUpdate;
     private string? _lastLog;
@@ -39,18 +40,28 @@ public partial class MainWindow : Window
         FindControl<TextBox>("RemoteBaseUrlBox")!.Text = _remote.BaseUrl;
         WireLive(); WireDiagnostics(); WireLog(); WireRemote();
         SetText("VersionText", $"v{AppVersion} • READ ONLY • FTDI 0");
+        UpdateClock();
+        _clockTimer.Tick += (_, _) => UpdateClock();
+        _clockTimer.Start();
         SelectPage("home");
         RefreshRemoteStatus();
         AddLog("[SYSTEM] PoloOS Minimal Test Client hazır.");
         AddLog("[SAFE] Diagnostik işlemler READ ONLY.");
         Opened += async (_, _) => { if (_remote.AutoCheckUpdates) await CheckForUpdatesAsync(true); };
-        Closing += async (_, _) => { await _live.DisposeAsync(); _updates.Dispose(); _uploads.Dispose(); };
+        Closing += async (_, _) => { _clockTimer.Stop(); await _live.DisposeAsync(); _updates.Dispose(); _uploads.Dispose(); };
     }
 
     private void NavButton_Click(object? sender, RoutedEventArgs e)
     {
         if (sender is Button button && button.Tag is string page)
             SelectPage(page);
+    }
+
+    private void UpdateClock()
+    {
+        var now = DateTime.Now;
+        SetText("ClockText", now.ToString("HH:mm"));
+        SetText("DateText", now.ToString("dd.MM.yyyy"));
     }
 
     private void SelectPage(string page)
