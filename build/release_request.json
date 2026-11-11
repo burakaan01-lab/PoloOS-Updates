@@ -1,6 +1,5 @@
 {
   "version": "0.5.10.9.19",
   "notes": "Add safe adapter disconnect button for releasing the FTDI/K-Line session",
-  "attempt": 1
+  "attempt": 2
 }
-
