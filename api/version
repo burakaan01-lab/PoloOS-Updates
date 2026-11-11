@@ -1,7 +1,7 @@
 {
-  "version": "0.5.10.9.20",
-  "packageUrl": "https://github.com/burakaan01-lab/PoloOS-Updates/releases/download/v0.5.10.9.20/PoloOS_0.5.10.9.20_win-x64.zip",
-  "sha256": "3AE276E236618254AC0316352C869D90F5DC986A8E414A6787E2497C1CEF0E58",
-  "notes": "Add low-resource PoloOS CarPC navigation shell foundation",
+  "version": "0.5.10.9.21",
+  "packageUrl": "https://github.com/burakaan01-lab/PoloOS-Updates/releases/download/v0.5.10.9.21/PoloOS_0.5.10.9.21_win-x64.zip",
+  "sha256": "FAE21EDAA20065C18B60562386CAAA97B3E5ABE6453FFEFB96BB4B0B8E6FF293",
+  "notes": "Add clock and date to the low-resource PoloOS CarPC shell",
   "mandatory": false
 }
