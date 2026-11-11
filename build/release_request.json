@@ -1,6 +1,6 @@
 {
-  "version": "0.5.10.9.20",
-  "notes": "Add low-resource PoloOS CarPC navigation shell foundation",
+  "version": "0.5.10.9.21",
+  "notes": "Add clock and date to the low-resource PoloOS CarPC shell",
   "attempt": 1
 }
 
