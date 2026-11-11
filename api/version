@@ -1,7 +1,7 @@
 {
-  "version": "0.5.10.9.23",
-  "packageUrl": "https://github.com/burakaan01-lab/PoloOS-Updates/releases/download/v0.5.10.9.23/PoloOS_0.5.10.9.23_win-x64.zip",
-  "sha256": "EE7CAFA0FF377747F069867C08C384E48C9AD609B0B9081493B5CA8F705010FB",
-  "notes": "Make PoloOS home screen multimedia-first",
+  "version": "0.5.10.9.24",
+  "packageUrl": "https://github.com/burakaan01-lab/PoloOS-Updates/releases/download/v0.5.10.9.24/PoloOS_0.5.10.9.24_win-x64.zip",
+  "sha256": "DB111C0EE159C6B07FF523A12DD10C1EF5096977BD55187FCC6C30C027129FCC",
+  "notes": "Add YouTube Lite and bundle CarPlay and YouTFast dependencies",
   "mandatory": false
 }
