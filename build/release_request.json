@@ -1,6 +1,6 @@
 {
-  "version": "0.5.10.9.21",
-  "notes": "Add clock and date to the low-resource PoloOS CarPC shell",
+  "version": "0.5.10.9.22",
+  "notes": "Add lightweight external media folder launcher",
   "attempt": 1
 }
 
