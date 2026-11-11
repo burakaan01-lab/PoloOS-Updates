@@ -31,7 +31,7 @@
       <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
         <StackPanel Orientation="Horizontal" Spacing="10"><TextBlock Text="PoloOS" FontSize="22" FontWeight="Bold" Foreground="#F2F4F5"/><TextBlock Text="CAR PC" Classes="muted" VerticalAlignment="Center"/></StackPanel>
         <StackPanel Grid.Column="1" HorizontalAlignment="Center"><TextBlock x:Name="PageTitle" Text="HOME" HorizontalAlignment="Center" FontSize="15" FontWeight="SemiBold"/><TextBlock x:Name="PageSubtitle" Text="Polo 9N3 Sport Edition" Classes="caption" HorizontalAlignment="Center"/></StackPanel>
-        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="18" VerticalAlignment="Center"><StackPanel><TextBlock x:Name="ClockText" Text="00:00" HorizontalAlignment="Right" FontSize="16" FontWeight="SemiBold"/><TextBlock x:Name="DateText" Text="00.00.0000" Classes="caption" HorizontalAlignment="Right"/></StackPanel><TextBlock Text="GPS  •  BT  •  Wi-Fi" Classes="muted" VerticalAlignment="Center"/><TextBlock x:Name="GlobalStatusText" Text="HAZIR" Foreground="#B8C0C6" VerticalAlignment="Center"/><TextBlock x:Name="VersionText" Text="v0.5.10.9.21" Classes="caption" VerticalAlignment="Center"/></StackPanel>
+        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="18" VerticalAlignment="Center"><StackPanel><TextBlock x:Name="ClockText" Text="00:00" HorizontalAlignment="Right" FontSize="16" FontWeight="SemiBold"/><TextBlock x:Name="DateText" Text="00.00.0000" Classes="caption" HorizontalAlignment="Right"/></StackPanel><TextBlock Text="GPS  •  BT  •  Wi-Fi" Classes="muted" VerticalAlignment="Center"/><TextBlock x:Name="GlobalStatusText" Text="HAZIR" Foreground="#B8C0C6" VerticalAlignment="Center"/><TextBlock x:Name="VersionText" Text="v0.5.10.9.23" Classes="caption" VerticalAlignment="Center"/></StackPanel>
       </Grid>
     </Border>
 
@@ -52,17 +52,21 @@
     </Border>
 
     <Grid Grid.Row="1" Grid.Column="1" Margin="26">
-      <Grid x:Name="HomePage" RowDefinitions="Auto,*,Auto">
-        <StackPanel><TextBlock Text="SÜRÜŞE HAZIR" FontSize="30" FontWeight="SemiBold"/><TextBlock Text="Temel ekran iskeleti hazır. Modüller adım adım bu kabuğa bağlanacak." Classes="muted" Margin="0,5,0,0"/></StackPanel>
-        <Grid Grid.Row="1" ColumnDefinitions="*,*,*" RowDefinitions="*,*" ColumnSpacing="12" RowSpacing="12" Margin="0,24,0,24">
-          <Border Classes="card"><StackPanel><TextBlock Text="VEHICLE" Classes="caption"/><TextBlock Text="Polo 9N3" FontSize="24" Margin="0,10,0,4"/><TextBlock Text="Durum ekranı ve canlı veriler" Classes="muted"/></StackPanel></Border>
-          <Border Grid.Column="1" Classes="card"><StackPanel><TextBlock Text="MEDIA" Classes="caption"/><TextBlock Text="Hazır" FontSize="24" Margin="0,10,0,4"/><TextBlock Text="Yerel müzik modülü için temel alan" Classes="muted"/></StackPanel></Border>
-          <Border Grid.Column="2" Classes="card"><StackPanel><TextBlock Text="DIAGNOSTICS" Classes="caption"/><TextBlock Text="VAG / DEMO" FontSize="24" Margin="0,10,0,4"/><TextBlock Text="Mevcut OBD çekirdeği korunuyor" Classes="muted"/></StackPanel></Border>
-          <Border Grid.Row="1" Classes="card"><StackPanel><TextBlock Text="SYSTEM" Classes="caption"/><TextBlock Text="LOW RESOURCE" FontSize="22" Margin="0,10,0,4"/><TextBlock Text="i3 / 4 GB hedefi" Classes="muted"/></StackPanel></Border>
-          <Border Grid.Row="1" Grid.Column="1" Classes="card"><StackPanel><TextBlock Text="CONNECTION" Classes="caption"/><TextBlock Text="GPS  •  BT  •  Wi-Fi" FontSize="20" Margin="0,10,0,4"/><TextBlock Text="Durum göstergeleri yer tutucu" Classes="muted"/></StackPanel></Border>
-          <Border Grid.Row="1" Grid.Column="2" Classes="card"><StackPanel><TextBlock Text="UPDATE" Classes="caption"/><TextBlock Text="OTA READY" FontSize="22" Margin="0,10,0,4"/><TextBlock Text="v0.5.10.9.21" Classes="muted"/></StackPanel></Border>
+      <Grid x:Name="HomePage" RowDefinitions="Auto,Auto,*,Auto">
+        <StackPanel><TextBlock Text="MULTIMEDIA HOME" FontSize="30" FontWeight="SemiBold"/><TextBlock Text="Müzik ve videolar için hızlı erişim merkezi." Classes="muted" Margin="0,5,0,0"/></StackPanel>
+        <Grid Grid.Row="1" ColumnDefinitions="*,*,*" ColumnSpacing="12" Margin="0,20,0,12">
+          <Button x:Name="HomeMediaButton" Tag="music" Content="♫   MEDIA MENÜSÜ" Click="NavButton_Click" MinHeight="56"/>
+          <Button x:Name="HomeOpenMediaButton" Grid.Column="1" Content="▣   MEDYA KLASÖRÜNÜ AÇ" MinHeight="56"/>
+          <Button x:Name="HomeVehicleButton" Grid.Column="2" Tag="vehicle" Content="▣   ARAÇ DURUMU" Click="NavButton_Click" MinHeight="56"/>
         </Grid>
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8"><Button x:Name="HomeVehicleButton" Tag="vehicle" Content="VEHICLE EKRANINI AÇ" Click="NavButton_Click"/><Button x:Name="HomeDiagButton" Tag="diag" Content="VAG DIAG EKRANINI AÇ" Click="NavButton_Click"/></StackPanel>
+        <Grid Grid.Row="2" ColumnDefinitions="2*,*,*" RowDefinitions="*,*" ColumnSpacing="12" RowSpacing="12">
+          <Border Classes="card" Grid.RowSpan="2"><StackPanel Spacing="12"><TextBlock Text="MEDIA CENTER" Classes="caption"/><TextBlock Text="Hazır" FontSize="34" FontWeight="SemiBold"/><TextBlock Text="Harici oynatıcı modu" FontSize="20"/><TextBlock x:Name="HomeMediaPathText" Text="Media klasörü hazırlanıyor..." Classes="muted" TextWrapping="Wrap"/><TextBlock Text="PoloOS video motoru çalıştırmaz; dosyalar Windows’un varsayılan oynatıcısıyla açılır." Classes="caption" TextWrapping="Wrap"/><Button Content="MEDIA EKRANINA GİT" Tag="music" Click="NavButton_Click" HorizontalAlignment="Left"/></StackPanel></Border>
+          <Border Grid.Column="1" Classes="card"><StackPanel><TextBlock Text="CONNECTION" Classes="caption"/><TextBlock Text="GPS  •  BT  •  Wi-Fi" FontSize="18" Margin="0,10,0,4"/><TextBlock Text="Yer tutucu durum göstergeleri" Classes="muted"/></StackPanel></Border>
+          <Border Grid.Column="2" Classes="card"><StackPanel><TextBlock Text="SYSTEM" Classes="caption"/><TextBlock Text="LOW RESOURCE" FontSize="20" Margin="0,10,0,4"/><TextBlock Text="i3 / 4 GB hedefi" Classes="muted"/></StackPanel></Border>
+          <Border Grid.Row="1" Grid.Column="1" Classes="card"><StackPanel><TextBlock Text="VEHICLE" Classes="caption"/><TextBlock Text="Polo 9N3" FontSize="20" Margin="0,10,0,4"/><TextBlock Text="Canlı veri için hazır" Classes="muted"/></StackPanel></Border>
+          <Border Grid.Row="1" Grid.Column="2" Classes="card"><StackPanel><TextBlock Text="VAG DIAG" Classes="caption"/><TextBlock Text="READ ONLY" FontSize="20" Margin="0,10,0,4"/><TextBlock Text="Demo / tanılama alanı" Classes="muted"/></StackPanel></Border>
+        </Grid>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="8" Margin="0,14,0,0"><Button x:Name="HomeDiagButton" Tag="diag" Content="VAG DIAG EKRANINI AÇ" Click="NavButton_Click"/><Button Content="AYARLAR" Tag="settings" Click="NavButton_Click"/></StackPanel>
       </Grid>
 
       <Grid x:Name="MusicPage" IsVisible="False"><Border Classes="card" VerticalAlignment="Top"><StackPanel Spacing="12"><TextBlock Text="MEDIA" FontSize="28"/><TextBlock Text="Müzik ve videoları harici oynatıcıyla aç." Classes="muted"/><TextBlock x:Name="MediaPathText" Text="Klasör hazırlanıyor..." Classes="caption" TextWrapping="Wrap"/><Button x:Name="OpenMediaButton" Content="MEDYA KLASÖRÜNÜ AÇ" HorizontalAlignment="Left"/><TextBlock Text="Dosyalar Windows’un varsayılan oynatıcısıyla açılır. VLC varsayılan seçiliyse VLC kullanılır." Classes="caption" TextWrapping="Wrap"/></StackPanel></Border></Grid>
