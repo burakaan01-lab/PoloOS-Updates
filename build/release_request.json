@@ -1,5 +1,6 @@
 {
-  "version": "0.5.10.9.19",
-  "notes": "Add safe adapter disconnect button for releasing the FTDI/K-Line session",
-  "attempt": 2
+  "version": "0.5.10.9.20",
+  "notes": "Add low-resource PoloOS CarPC navigation shell foundation",
+  "attempt": 1
 }
+
